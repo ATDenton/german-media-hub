@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deutsch — Media Hub</title>
+<style>
+  :root{
+    --bg:#0e0f13; --bg2:#15171d; --card:#191c24; --card-h:#1f232d;
+    --line:#282d39; --fg:#e8eaf0; --fg2:#9aa2b4; --fg3:#6b7385;
+    --acc:#f5c518; --acc2:#e04b4b; --ok:#5bc98a;
+    --r:14px; --mono:ui-monospace,'SF Mono',Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,sans-serif;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  }
+  html[data-theme="light"]{
+    --bg:#faf9f7; --bg2:#f2f0ec; --card:#fff; --card-h:#fff;
+    --line:#e2ded7; --fg:#1a1c22; --fg2:#5c6172; --fg3:#8a8f9e;
+    --acc:#b8860b; --acc2:#c0392b; --ok:#2e8b57;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--fg); font-family:var(--sans);
+    font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- header ---------- */
+  header{
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--bg2),var(--bg));
+    padding:34px 0 26px;
+  }
+  .flag{display:inline-flex;height:13px;width:20px;border-radius:2px;overflow:hidden;vertical-align:-1px;box-shadow:0 0 0 1px rgba(255,255,255,.09)}
+  .flag i{flex:1}
+  .flag i:nth-child(1){background:#111}.flag i:nth-child(2){background:#d00}.flag i:nth-child(3){background:#fc0}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.02em;font-weight:680}
+  .sub{color:var(--fg2);margin:0;max-width:62ch;font-size:14.5px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+  .themebtn{
+    background:var(--card);border:1px solid var(--line);color:var(--fg2);
+    border-radius:99px;padding:7px 14px;cursor:pointer;font-size:13px;font-family:inherit;
+  }
+  .themebtn:hover{color:var(--fg);border-color:var(--fg3)}
+
+  /* ---------- tabs ---------- */
+  nav.tabs{display:flex;gap:4px;margin-top:24px;flex-wrap:wrap}
+  nav.tabs button{
+    background:none;border:none;border-bottom:2px solid transparent;color:var(--fg3);
+    font:inherit;font-size:14px;padding:8px 12px;cursor:pointer;border-radius:6px 6px 0 0;
+  }
+  nav.tabs button:hover{color:var(--fg)}
+  nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--acc);font-weight:600}
+
+  /* ---------- controls ---------- */
+  .controls{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:14px 0}
+  .searchrow{display:flex;gap:10px;align-items:center}
+  .searchbox{flex:1;position:relative}
+  .searchbox input{
+    width:100%;padding:11px 40px 11px 38px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--fg);font:inherit;font-size:14.5px;
+  }
+  .searchbox input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+  .searchbox .mag{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--fg3);font-size:14px}
+  .searchbox kbd{
+    position:absolute;right:10px;top:50%;transform:translateY(-50%);
+    font-family:var(--mono);font-size:11px;color:var(--fg3);border:1px solid var(--line);
+    border-radius:5px;padding:2px 6px;background:var(--bg2);
+  }
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;align-items:center}
+  .chips .lbl{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg3);margin-right:3px}
+  .chip{
+    border:1px solid var(--line);background:var(--card);color:var(--fg2);
+    border-radius:99px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap;
+  }
+  .chip:hover{color:var(--fg);border-color:var(--fg3)}
+  .chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#141414;font-weight:600}
+  .chip.lv[aria-pressed="true"]{background:var(--lvc,var(--acc));border-color:var(--lvc,var(--acc));color:#141414}
+  .sep{width:1px;height:20px;background:var(--line);margin:0 4px}
+  .count{color:var(--fg3);font-size:13px;margin-left:auto;white-space:nowrap}
+
+  /* ---------- cards ---------- */
+  main{padding:26px 0 80px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:16px 16px 14px;display:flex;flex-direction:column;gap:9px;position:relative;
+    transition:border-color .13s,transform .13s,background .13s;
+  }
+  .card:hover{border-color:var(--fg3);background:var(--card-h);transform:translateY(-1px)}
+  .card h3{margin:0;font-size:15.5px;font-weight:640;letter-spacing:-.01em;padding-right:26px;line-height:1.35}
+  .card h3 a{text-decoration:none}
+  .card h3 a:hover{color:var(--acc)}
+  .card h3 a::after{content:"";position:absolute;inset:0;border-radius:var(--r)}
+  .src{font-size:12px;color:var(--fg3);font-family:var(--mono)}
+  .card p{margin:0;font-size:13.5px;color:var(--fg2);line-height:1.5}
+  .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px;align-items:center}
+  .b{font-size:11px;padding:2.5px 8px;border-radius:99px;border:1px solid var(--line);color:var(--fg2);white-space:nowrap}
+  .b.kind{background:var(--bg2)}
+  .b.lv{border:none;font-weight:600;color:#141414}
+  .b.dl{border-color:var(--ok);color:var(--ok)}
+  .b.paid{border-color:var(--acc2);color:var(--acc2)}
+  .fav{
+    position:absolute;top:12px;right:11px;background:none;border:none;cursor:pointer;
+    font-size:15px;color:var(--fg3);padding:2px;z-index:2;line-height:1;
+  }
+  .fav:hover{color:var(--acc)}
+  .fav[aria-pressed="true"]{color:var(--acc)}
+  .empty{text-align:center;color:var(--fg3);padding:70px 20px;font-size:15px}
+
+  /* ---------- section headings ---------- */
+  h2.sec{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);
+    margin:34px 0 14px;font-weight:640;display:flex;align-items:center;gap:10px;
+  }
+  h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+  h2.sec:first-child{margin-top:0}
+
+  /* ---------- panels ---------- */
+  .panel{display:none}
+  .panel.on{display:block}
+
+  /* ---------- reader ---------- */
+  .readerwrap{max-width:760px;margin:0 auto}
+  .lvpicker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
+  .text{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 28px}
+  .text .title{font-family:var(--serif);font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
+  .text .note{font-size:12.5px;color:var(--fg3);margin:0 0 20px}
+  .sent{
+    cursor:pointer;padding:9px 12px;border-radius:8px;margin:0 0 5px;
+    border-left:2px solid transparent;transition:background .12s;
+  }
+  .sent:hover{background:var(--bg2)}
+  .sent .de{font-family:var(--serif);font-size:18px;line-height:1.6}
+  .sent .en{
+    display:none;font-size:13.5px;color:var(--fg2);margin-top:6px;
+    padding-left:11px;border-left:2px solid var(--acc);font-style:italic;
+  }
+  .sent.open{background:var(--bg2);border-left-color:var(--acc)}
+  .sent.open .en{display:block}
+  .readctl{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  .tip{background:var(--bg2);border:1px solid var(--line);border-left:3px solid var(--acc);
+       border-radius:8px;padding:12px 14px;margin-top:22px;font-size:13.5px;color:var(--fg2)}
+  .tip b{color:var(--fg)}
+  .tip code{font-family:var(--mono);font-size:12.5px;background:var(--card);padding:1px 5px;border-radius:4px}
+
+  /* ---------- plan ---------- */
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:14px}
+  .plan h3{margin:0 0 3px;font-size:17px;display:flex;align-items:center;gap:9px}
+  .plan .cefr{font-family:var(--mono);font-size:11px;color:var(--fg3);font-weight:400}
+  .plan .goal{color:var(--fg2);font-size:13.5px;margin:0 0 14px}
+  .plan ol{margin:0;padding-left:20px}
+  .plan li{margin-bottom:8px;font-size:14px;color:var(--fg2)}
+  .plan li b{color:var(--fg);font-weight:600}
+  .plan li .m{font-family:var(--mono);font-size:11.5px;color:var(--acc);margin-right:6px}
+  .prose{max-width:74ch}
+  .prose p{color:var(--fg2);font-size:14.5px}
+  .prose h3{font-size:16px;margin:26px 0 8px}
+  .prose ul{color:var(--fg2);font-size:14.5px;padding-left:20px}
+  .prose li{margin-bottom:7px}
+  .prose code{font-family:var(--mono);font-size:12.5px;background:var(--card);border:1px solid var(--line);padding:2px 6px;border-radius:5px;color:var(--fg)}
+  .prose a{color:var(--acc)}
+  footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--fg3);font-size:12.5px}
+  @media(max-width:640px){
+    h1{font-size:24px} .grid{grid-template-columns:1fr} .text{padding:20px 18px}
+    .sent .de{font-size:17px} .count{width:100%;margin-left:0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1><span class="flag"><i></i><i></i><i></i></span> Deutsch — Media Hub</h1>
+        <p class="sub">Read, watch and listen your way to German. Everything below is real German media, sorted by how much German you need to enjoy it. Search it, filter it, star what you like.</p>
+      </div>
+      <button class="themebtn" id="theme">◐ Theme</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-panel="library" aria-selected="true">Library</button>
+      <button role="tab" data-panel="reader" aria-selected="false">Parallel Reader</button>
+      <button role="tab" data-panel="plan" aria-selected="false">Daily Plan</button>
+      <button role="tab" data-panel="offline" aria-selected="false">Download / Offline</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ LIBRARY ============ -->
+<section class="panel on" id="library">
+  <div class="controls">
+    <div class="wrap">
+      <div class="searchrow">
+        <div class="searchbox">
+          <span class="mag">⌕</span>
+          <input id="q" type="search" placeholder="Search — try “news”, “podcast”, “kids”, “grammar”, “Netflix”, “free”…" autocomplete="off">
+          <kbd>/</kbd>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="lbl">Level</span>
+        <button class="chip lv" data-lv="1" style="--lvc:#7dd3a0">🥚 Noob</button>
+        <button class="chip lv" data-lv="2" style="--lvc:#8ec5f0">🐣 Beginner</button>
+        <button class="chip lv" data-lv="3" style="--lvc:#f5c518">🐦 Intermediate</button>
+        <button class="chip lv" data-lv="4" style="--lvc:#f0975e">🦅 High</button>
+        <button class="chip lv" data-lv="5" style="--lvc:#e08bd0">🎓 Fluent</button>
+        <span class="sep"></span>
+        <span class="lbl">Type</span>
+        <button class="chip kd" data-kd="read">📖 Read</button>
+        <button class="chip kd" data-kd="watch">📺 Watch</button>
+        <button class="chip kd" data-kd="listen">🎧 Listen</button>
+        <button class="chip kd" data-kd="tool">🛠 Tools</button>
+        <span class="sep"></span>
+        <button class="chip fl" data-fl="free">Free only</button>
+        <button class="chip fl" data-fl="dl">Downloadable</button>
+        <button class="chip fl" data-fl="fav">★ Starred</button>
+        <span class="count" id="count"></span>
+      </div>
+    </div>
+  </div>
+  <main><div class="wrap"><div id="results"></div></div></main>
+</section>
+
+<!-- ============ READER ============ -->
+<section class="panel" id="reader">
+  <main><div class="wrap"><div class="readerwrap">
+    <div class="lvpicker" id="lvpick"></div>
+    <div class="readctl">
+      <span class="src" id="rmeta"></span>
+      <button class="themebtn" id="revealAll">Reveal all translations</button>
+    </div>
+    <div class="text" id="textbox"></div>
+    <div class="tip" id="rtip"></div>
+  </div></div></main>
+</section>
+
+<!-- ============ PLAN ============ -->
+<section class="panel" id="plan">
+  <main><div class="wrap"><div class="prose" style="max-width:820px">
+    <p style="margin-top:0">Thirty to forty-five minutes a day beats a four-hour Sunday every single time. Pick the level that feels <em>slightly</em> too easy and start there — comprehension, not struggle, is what builds a language.</p>
+    <div id="plans"></div>
+  </div></div></main>
+</section>
+
+<!-- ============ OFFLINE ============ -->
+<section class="panel" id="offline">
+  <main><div class="wrap"><div class="prose">
+    <h2 class="sec">Getting German media onto your machine</h2>
+    <p>I've deliberately linked to sources rather than bundling copies of films and news articles into this file — most of that material is copyrighted, and a page full of scraped media would break within weeks anyway. What follows is the stuff that is genuinely, legally downloadable, plus the two tools that do the most work.</p>
+
+    <h3>Public-domain books (EPUB / txt, yours forever)</h3>
+    <ul>
+      <li><a href="https://www.gutenberg.org/browse/languages/de" target="_blank" rel="noopener">Project Gutenberg — German bookshelf</a> — thousands of titles, EPUB and plain text, no account. Goethe, Kafka, Fontane, the Grimms.</li>
+      <li><a href="https://www.projekt-gutenberg.org/" target="_blank" rel="noopener">Projekt Gutenberg-DE</a> — the German-hosted sibling, broader German-language catalogue.</li>
+      <li><a href="https://www.zeno.org/Literatur" target="_blank" rel="noopener">Zeno.org</a> — big free German literature and reference archive.</li>
+    </ul>
+
+    <h3>Public-domain audiobooks (MP3)</h3>
+    <ul>
+      <li><a href="https://librivox.org/search?primary_key=6&amp;search_category=language&amp;search_page=1&amp;search_form=get_results" target="_blank" rel="noopener">LibriVox — German recordings</a> — volunteer-read, free MP3 download or podcast feed. Pair a LibriVox recording with the matching Gutenberg text and you have a parallel audiobook for nothing.</li>
+      <li><a href="https://www.ohrka.de/" target="_blank" rel="noopener">Ohrka</a> — free, professionally produced children's audiobooks. Genuinely the best-kept secret for A2–B1 listening.</li>
+    </ul>
+
+    <h3>Podcasts — subscribe once, they download themselves</h3>
+    <p>Every podcast in the Library tab has an RSS feed. Add them in Apple Podcasts, Pocket Casts, AntennaPod or Overcast and set "download new episodes automatically" — that is your commute solved permanently. The highest-value three:</p>
+    <ul>
+      <li><b>Langsam gesprochene Nachrichten</b> (DW) — the day's real news, read slowly. B1–B2.</li>
+      <li><b>Slow German mit Annik Rubens</b> — short cultural monologues with transcripts. A2–B1.</li>
+      <li><b>Easy German</b> — two natives talking naturally, transcripts behind a cheap membership. B1+.</li>
+    </ul>
+
+    <h3>The two tools that matter most</h3>
+    <ul>
+      <li><a href="https://www.languagereactor.com/" target="_blank" rel="noopener">Language Reactor</a> — a browser extension that puts <b>dual German + English subtitles</b> on Netflix and YouTube, lets you click any word for a definition, and replays lines. This single extension turns your existing streaming subscription into a full learning platform. Start here.</li>
+      <li><a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">Anki</a> — spaced repetition flashcards, free on desktop and Android. Make cards <em>only</em> from words you met in something you actually read or watched; downloaded 5,000-word decks get abandoned.</li>
+    </ul>
+
+    <h3>Offline in the apps themselves</h3>
+    <ul>
+      <li><b>DW Learn German</b> app — the whole Nicos Weg A1–B1 course downloads for offline use, free, no ads.</li>
+      <li><b>ARD Audiothek</b> and <b>ZDFmediathek</b> apps — download episodes for offline playback. Some ARD/ZDF video is geo-restricted to Germany; the audio generally is not.</li>
+      <li><b>Spotify / YouTube Premium</b> — offline downloads for German music and channels if you already pay for them.</li>
+    </ul>
+
+    <div class="tip"><b>One honest warning about geo-blocking.</b> ARD and ZDF Mediathek restrict a good chunk of their video library to German IP addresses for licensing reasons. Their <em>news</em> and <em>children's</em> programming — Tagesschau, logo!, Sendung mit der Maus, Löwenzahn — is mostly available worldwide, and that happens to be exactly the material a learner wants. Start there and you'll rarely hit a wall.</div>
+  </div></div></main>
+</section>
+
+<footer><div class="wrap">
+  Curated links open in a new tab. Starred items are saved in this browser only. Nothing here is tracked or sent anywhere.
+</div></footer>
+
+<script>
+/* ================= DATA ================= */
+// l: levels 1=Noob(A1) 2=Beginner(A2) 3=Intermediate(B1) 4=High(B2) 5=Fluent(C1+)
+const D = [
+/* ---------- READ ---------- */
+{t:"Nachrichtenleicht",s:"Deutschlandfunk",u:"https://www.nachrichtenleicht.de/",k:"read",l:[2,3],free:1,dl:1,tg:"news einfache sprache daily audio podcast",d:"Real German news rewritten in deliberately simple sentences, updated daily, with audio for every article. The single best bridge from textbook German to actual news."},
+{t:"Klexikon — the children's Wikipedia",s:"klexikon.zum.de",u:"https://klexikon.zum.de/",k:"read",l:[2,3],free:1,tg:"encyclopedia kids reference wikipedia",d:"3,000+ encyclopedia articles written for German children. Look up anything you already know about in English and read it in comprehensible German."},
+{t:"logo! Kindernachrichten",s:"ZDF",u:"https://www.zdf.de/kinder/logo",k:"read",l:[2,3],free:1,tg:"news kids daily video children",d:"The daily children's news bulletin. Real world events explained in short sentences — text and 10-minute video."},
+{t:"Top-Thema mit Vokabeln",s:"DW Learn German",u:"https://learngerman.dw.com/en/top-thema/s-8031",k:"read",l:[3],free:1,dl:1,tg:"news vocabulary audio b1 exercises",d:"A current-affairs article twice a week at exactly B1, with audio, a glossary of every hard word, and comprehension questions."},
+{t:"Deutsche Welle — Nachrichten",s:"dw.com",u:"https://www.dw.com/de/themen/s-9077",k:"read",l:[3,4],free:1,tg:"news current affairs germany",d:"Germany's international broadcaster. Clear standard German, world coverage, and every story also exists in English if you want to check yourself."},
+{t:"Tagesschau",s:"ARD",u:"https://www.tagesschau.de/",k:"read",l:[4,5],free:1,tg:"news serious daily germany politics",d:"The paper of record in broadcast form. Dense, formal, full of the compound nouns and passive constructions that define written German."},
+{t:"Der Spiegel",s:"spiegel.de",u:"https://www.spiegel.de/",k:"read",l:[4,5],free:0,tg:"news magazine journalism longform",d:"Germany's flagship news magazine. Long, argumentative, stylish — the reading level most learners are aiming at. Partial paywall."},
+{t:"ZEIT ONLINE",s:"zeit.de",u:"https://www.zeit.de/index",k:"read",l:[5],free:0,tg:"newspaper essays culture longform",d:"Essayistic, literary, sometimes gloriously long-winded. If you can read Die Zeit comfortably you can read anything in German."},
+{t:"Süddeutsche Zeitung",s:"sueddeutsche.de",u:"https://www.sueddeutsche.de/",k:"read",l:[4,5],free:0,tg:"newspaper munich news",d:"Major daily out of Munich. Good middle ground between Tagesschau's terseness and Die Zeit's sprawl."},
+{t:"Der Postillon",s:"postillon.com",u:"https://www.der-postillon.com/",k:"read",l:[5],free:1,tg:"satire humour funny onion",d:"Germany's answer to The Onion. Satire is the last thing you understand in a foreign language — a superb yardstick for how far you've come."},
+{t:"Wikipedia auf Deutsch",s:"de.wikipedia.org",u:"https://de.wikipedia.org/",k:"read",l:[3,4,5],free:1,tg:"encyclopedia reference free",d:"Read the German article on a topic you know well. Familiar content carries you over unfamiliar grammar — the oldest trick in the book, and it works."},
+{t:"Projekt Gutenberg-DE",s:"projekt-gutenberg.org",u:"https://www.projekt-gutenberg.org/",k:"read",l:[5],free:1,dl:1,tg:"books literature classics free public domain",d:"The full German literary canon, free. Kafka, Fontane, Goethe, Hesse, the Brothers Grimm — the fairy tales are the gentlest way in."},
+{t:"Project Gutenberg — German shelf",s:"gutenberg.org",u:"https://www.gutenberg.org/browse/languages/de",k:"read",l:[4,5],free:1,dl:1,tg:"books epub download literature public domain",d:"Same canon, downloadable as EPUB and plain text for your e-reader. Pair with LibriVox audio for a free parallel audiobook."},
+{t:"DWDS — Digitales Wörterbuch",s:"dwds.de",u:"https://www.dwds.de/",k:"read",l:[4,5],free:1,tg:"dictionary corpus reference advanced",d:"The serious German-German dictionary, with corpus examples showing how words are really used. Switching to a monolingual dictionary is a rite of passage."},
+{t:"LEO Dictionary",s:"dict.leo.org",u:"https://dict.leo.org/german-english/",k:"read",l:[1,2,3,4,5],free:1,tg:"dictionary translation reference forum",d:"The German↔English dictionary with the best forum discussions attached. When a phrase makes no sense, someone has already asked about it here."},
+{t:"Reverso Context",s:"context.reverso.net",u:"https://context.reverso.net/translation/german-english/",k:"read",l:[2,3,4,5],free:1,tg:"dictionary examples sentences translation",d:"Shows a word inside dozens of real bilingual sentence pairs. Far more useful than a dictionary definition for learning which preposition goes with what."},
+
+/* ---------- WATCH ---------- */
+{t:"Nicos Weg (A1 → B1)",s:"DW Learn German",u:"https://learngerman.dw.com/en/nicos-weg/c-36519789",k:"watch",l:[1,2,3],free:1,dl:1,tg:"course video drama structured beginner free",d:"A complete free video course disguised as a drama series: Nico moves to Germany and deals with flats, paperwork and friendships. If you do one thing on this page, do this."},
+{t:"Easy German",s:"YouTube",u:"https://www.youtube.com/@EasyGerman",k:"watch",l:[2,3,4],free:1,tg:"street interviews subtitles authentic conversation",d:"Street interviews with real Germans, dual German+English subtitles burned in. The closest thing to being dropped into a conversation with a safety net."},
+{t:"Super Easy German",s:"YouTube",u:"https://www.youtube.com/playlist?list=PLk1fjOl4WCBesGDVsjbY_iBmODY_1nAHZ",k:"watch",l:[1,2],free:1,tg:"beginner slow subtitles absolute basics",d:"The same team speaking very slowly for absolute beginners. Start here if normal Easy German sounds like static."},
+{t:"Die Sendung mit der Maus",s:"WDR",u:"https://www.wdrmaus.de/",k:"watch",l:[1,2,3],free:1,tg:"kids children explainer classic science",d:"A German institution: how things are made, explained slowly and clearly to seven-year-olds. Slow, visual, and the vocabulary is concrete."},
+{t:"Löwenzahn",s:"ZDF",u:"https://www.zdf.de/kinder/loewenzahn",k:"watch",l:[2,3],free:1,tg:"kids nature science children explainer",d:"Nature and science for children, in an old blue caravan. Clear enunciation, generous pauses, and each episode has a single topic's vocabulary."},
+{t:"KiKA — children's TV",s:"kika.de",u:"https://www.kika.de/",k:"watch",l:[1,2,3],free:1,tg:"kids cartoons children mediathek",d:"The whole German children's channel on demand. Cartoons you already know the plots of are unbeatable early listening practice."},
+{t:"Tagesschau in 100 Sekunden",s:"tagesschau.de",u:"https://www.tagesschau.de/100sekunden/",k:"watch",l:[4,5],free:1,tg:"news short daily fast",d:"The day's news in 100 seconds, at full native speed. A brutal but perfect daily benchmark — check back monthly and watch it get easier."},
+{t:"ARD Mediathek",s:"ardmediathek.de",u:"https://www.ardmediathek.de/",k:"watch",l:[4,5],free:1,tg:"tv streaming documentaries drama public",d:"Public broadcaster's full catalogue: documentaries, Tatort, drama. Some titles are geo-restricted to Germany; news and kids' content generally is not."},
+{t:"ZDFmediathek",s:"zdf.de",u:"https://www.zdf.de/",k:"watch",l:[4,5],free:1,dl:1,tg:"tv streaming documentaries drama public",d:"The other big public broadcaster. Strong documentary strand, and the app supports offline downloads."},
+{t:"Dinge Erklärt – Kurzgesagt",s:"YouTube",u:"https://www.youtube.com/@dingeerklaert",k:"watch",l:[4],free:1,tg:"science explainer animation subtitles",d:"The German channel of Kurzgesagt. Beautifully animated science — and many videos exist in English too, so you can watch it twice and compare."},
+{t:"MrWissen2go",s:"YouTube",u:"https://www.youtube.com/@MrWissen2go",k:"watch",l:[4,5],free:1,tg:"politics history explainer education",d:"Politics and history explained fast and clearly. Excellent for absorbing the vocabulary of German public debate."},
+{t:"maiLab",s:"YouTube",u:"https://www.youtube.com/@maiLab",k:"watch",l:[4,5],free:1,tg:"science chemistry explainer",d:"Rigorous, funny science journalism from Mai Thi Nguyen-Kim. Rapid native speech — a genuine B2/C1 workout."},
+{t:"STRG_F",s:"YouTube",u:"https://www.youtube.com/@STRGF",k:"watch",l:[5],free:1,tg:"documentary investigative journalism reportage",d:"Investigative documentary shorts from NDR/funk. Unscripted street German, regional accents, real interviews — the hard stuff."},
+{t:"Y-Kollektiv",s:"YouTube",u:"https://www.youtube.com/@ykollektiv",k:"watch",l:[5],free:1,tg:"documentary reportage journalism",d:"First-person reportage on German subcultures and social issues. Fast, colloquial, and consistently gripping."},
+{t:"Learn German with Anja",s:"YouTube",u:"https://www.youtube.com/@LearnGermanwithAnja",k:"watch",l:[1,2],free:1,tg:"lessons grammar beginner teacher fun",d:"Deliberately over-the-top energy that makes early grammar stick. Great for the pronoun and case drills nobody enjoys."},
+{t:"lingoni GERMAN",s:"YouTube",u:"https://www.youtube.com/@lingoniGERMAN",k:"watch",l:[1,2,3,4],free:1,tg:"lessons grammar structured worksheets a1 b2",d:"Hundreds of tidy A1–B2 lessons with downloadable worksheets. The most systematic free grammar channel."},
+{t:"Netflix in German — Dark",s:"Netflix",u:"https://www.netflix.com/title/80100172",k:"watch",l:[4,5],free:0,tg:"netflix drama series sci-fi thriller",d:"Small-town time-travel thriller, and the show that proved German TV could travel. Mumbled and complicated — turn on Language Reactor's dual subtitles."},
+{t:"Netflix in German — How to Sell Drugs Online (Fast)",s:"Netflix",u:"https://www.netflix.com/title/80218894",k:"watch",l:[4],free:0,tg:"netflix comedy series teen slang",d:"Fast, funny, and full of current teenage slang. Short episodes make it far less daunting than a prestige drama."},
+{t:"Netflix in German — Kleo",s:"Netflix",u:"https://www.netflix.com/title/81028206",k:"watch",l:[4,5],free:0,tg:"netflix thriller series history stasi",d:"A Stasi assassin's revenge spree through post-Wall Berlin. Stylish, and a painless way into GDR history and vocabulary."},
+{t:"Good Bye, Lenin! (film)",s:"film",u:"https://www.imdb.com/title/tt0301357/",k:"watch",l:[4],free:0,tg:"film movie comedy history gdr classic",d:"A son keeps the GDR alive in one flat so his mother doesn't learn the Wall fell. Warm, slow-spoken, and the single most-assigned film in German classes for good reason."},
+{t:"Das Leben der Anderen (film)",s:"film",u:"https://www.imdb.com/title/tt0405094/",k:"watch",l:[4,5],free:0,tg:"film movie drama history stasi oscar",d:"A Stasi officer surveilling a playwright starts to sympathise. Quiet, precise, formal German — unusually easy to follow for a C-level film."},
+{t:"LyricsTraining",s:"lyricstraining.com",u:"https://lyricstraining.com/de",k:"watch",l:[2,3,4],free:1,tg:"music songs game listening fill gaps",d:"Fill in the missing words of German songs as they play. Gamified dictation that is genuinely hard to stop doing."},
+
+/* ---------- LISTEN ---------- */
+{t:"Langsam gesprochene Nachrichten",s:"DW",u:"https://learngerman.dw.com/en/langsam-gesprochene-nachrichten/s-13610",k:"listen",l:[3,4],free:1,dl:1,tg:"news slow daily podcast transcript rss",d:"The real news read slowly and clearly, every weekday, with a full transcript. The most effective free listening resource in existence for B1–B2."},
+{t:"Slow German mit Annik Rubens",s:"slowgerman.com",u:"https://slowgerman.com/",k:"listen",l:[2,3],free:1,dl:1,tg:"podcast slow culture transcript beginner",d:"Short monologues about German life and culture, spoken slowly, every episode transcribed. Running since 2007 — an enormous back catalogue."},
+{t:"Easy German Podcast",s:"easygerman.org",u:"https://www.easygerman.org/podcast",k:"listen",l:[3,4],free:1,dl:1,tg:"podcast conversation natural transcript rss",d:"Two friends chatting naturally about a topic for 30 minutes, twice a week. Free to listen; transcripts and vocab come with a cheap membership."},
+{t:"Coffee Break German",s:"coffeebreaklanguages.com",u:"https://coffeebreaklanguages.com/coffeebreakgerman/",k:"listen",l:[1,2,3],free:1,dl:1,tg:"podcast course beginner structured lessons",d:"A structured audio course in podcast form, taught in English at first and increasingly in German. Ideal for commutes when you're still at A1."},
+{t:"Nachrichtenleicht (podcast)",s:"Deutschlandfunk",u:"https://www.nachrichtenleicht.de/nachrichtenleicht-podcast-102.html",k:"listen",l:[2,3],free:1,dl:1,tg:"news podcast simple daily rss",d:"The simple-language news bulletin as a daily podcast. Five minutes, and the matching text is on the website to read along."},
+{t:"Deutsch – warum nicht?",s:"DW",u:"https://learngerman.dw.com/en/deutsch-warum-nicht/s-2016",k:"listen",l:[1,2,3],free:1,dl:1,tg:"radio drama course story beginner free",d:"A charming free radio-drama course, A1 through B1, with PDF workbooks. Story-driven, so the vocabulary sticks."},
+{t:"Deutschlandfunk (live radio)",s:"deutschlandfunk.de",u:"https://www.deutschlandfunk.de/",k:"listen",l:[4,5],free:1,tg:"radio news culture live serious",d:"National public radio: news, culture, long interviews. Leave it on in the background — passive exposure is worth more than people think."},
+{t:"Deutschlandfunk Nova",s:"deutschlandfunknova.de",u:"https://www.deutschlandfunknova.de/",k:"listen",l:[4,5],free:1,dl:1,tg:"radio podcast young science culture",d:"The younger, faster sibling station. Short science and culture segments in relaxed modern German."},
+{t:"Ohrka — free kids' audiobooks",s:"ohrka.de",u:"https://www.ohrka.de/",k:"listen",l:[2,3],free:1,dl:1,tg:"audiobook kids children stories free download",d:"Professionally produced children's audiobooks and radio plays, completely free. Wildly underused by adult learners — clear diction, simple plots, hours of it."},
+{t:"LibriVox — German audiobooks",s:"librivox.org",u:"https://librivox.org/search?primary_key=6&search_category=language&search_page=1&search_form=get_results",k:"listen",l:[4,5],free:1,dl:1,tg:"audiobook free public domain download classics",d:"Volunteer-recorded public-domain audiobooks, free to download. Combine with the matching Gutenberg text for parallel reading and listening."},
+{t:"radioWissen",s:"Bayern 2",u:"https://www.br.de/radio/bayern2/sendungen/radiowissen/index.html",k:"listen",l:[4,5],free:1,dl:1,tg:"podcast history science documentary radio",d:"Twenty-minute documentary features on history, science and philosophy. Immaculately spoken standard German."},
+{t:"ZEIT Verbrechen",s:"zeit.de",u:"https://www.zeit.de/serie/zeit-verbrechen",k:"listen",l:[5],free:1,dl:1,tg:"podcast true crime conversation popular",d:"Two journalists discuss a real criminal case. Conversational, gripping, and the narrative structure carries you through hard vocabulary."},
+{t:"Fest & Flauschig",s:"Spotify",u:"https://open.spotify.com/show/1OLc2XvGgH6O8UdjSwbAvi",k:"listen",l:[5],free:0,tg:"podcast comedy conversation slang popular",d:"Germany's biggest comedy podcast. Two men interrupting each other for 90 minutes — the ultimate colloquial listening test."},
+{t:"GermanPod101",s:"germanpod101.com",u:"https://www.germanpod101.com/",k:"listen",l:[1,2,3,4],free:0,tg:"podcast lessons structured course a1 b2",d:"A huge graded lesson library with transcripts at every level. Free tier is usable; the aggressive upsell emails are the price."},
+{t:"German music starter playlist",s:"Spotify",u:"https://open.spotify.com/search/deutschrap",k:"listen",l:[2,3,4,5],free:1,tg:"music songs pop rap lyrics culture",d:"Start with AnnenMayKantereit, Wir sind Helden, Herbert Grönemeyer, Cro, Apache 207 and Die Ärzte. Read the lyrics as you listen — songs embed grammar in your head whether you like it or not."},
+
+/* ---------- TOOLS ---------- */
+{t:"Language Reactor",s:"languagereactor.com",u:"https://www.languagereactor.com/",k:"tool",l:[2,3,4,5],free:1,tg:"netflix youtube subtitles dual extension essential",d:"Browser extension giving dual German+English subtitles on Netflix and YouTube, with click-to-define and line replay. Turns any streaming subscription into a study tool. Install this first."},
+{t:"Anki",s:"apps.ankiweb.net",u:"https://apps.ankiweb.net/",k:"tool",l:[1,2,3,4,5],free:1,dl:1,tg:"flashcards spaced repetition vocabulary memory",d:"Spaced-repetition flashcards, free on desktop and Android. Make cards only from words you actually met in the wild — pre-made 5,000-word decks get abandoned."},
+{t:"DW Placement Test",s:"DW Learn German",u:"https://learngerman.dw.com/en/placement-test/s-56812728",k:"tool",l:[1,2,3,4,5],free:1,tg:"test level assessment cefr start here",d:"Fifteen minutes to find out whether you're A1 or B1. Take it now, and again in three months — the number moving is the best motivation there is."},
+{t:"Verbformen",s:"verbformen.de",u:"https://www.verbformen.com/",k:"tool",l:[1,2,3,4,5],free:1,tg:"verbs conjugation grammar reference tables",d:"Every conjugation of every German verb, with audio. Bookmark it; you will use it daily for the first year."},
+{t:"Forvo",s:"forvo.com",u:"https://forvo.com/languages/de/",k:"tool",l:[1,2,3,4,5],free:1,tg:"pronunciation audio native speakers",d:"Native speakers pronouncing individual words, often in several regional accents. Settles arguments about Chemie and Chinesisch."},
+{t:"DeepL",s:"deepl.com",u:"https://www.deepl.com/translator",k:"tool",l:[1,2,3,4,5],free:1,tg:"translation machine translate check",d:"Noticeably better German translation than the alternatives. Use it to check your own sentences after writing them, never to write them for you."},
+{t:"Goethe-Institut free practice",s:"goethe.de",u:"https://www.goethe.de/de/spr/ueb.html",k:"tool",l:[1,2,3,4,5],free:1,tg:"exercises exam practice official certificate",d:"Free exercises and full practice exams from the body that issues the official German certificates. The definitive answer to 'am I really B1?'"},
+{t:"Tandem",s:"tandem.net",u:"https://tandem.net/",k:"tool",l:[2,3,4,5],free:1,tg:"speaking partner exchange conversation practice",d:"Language exchange with real Germans learning your language. Speaking is the skill that decays without a human on the other end."},
+{t:"italki",s:"italki.com",u:"https://www.italki.com/en/teachers/german",k:"tool",l:[1,2,3,4,5],free:0,tg:"tutor lessons speaking paid conversation",d:"One-to-one tutors from around €10/hour. One 45-minute conversation a week does more for fluency than any app."},
+{t:"r/German",s:"reddit.com",u:"https://www.reddit.com/r/German/",k:"tool",l:[1,2,3,4,5],free:1,tg:"community forum questions help advice",d:"Ask why a sentence is wrong and get a real answer from a native within the hour. The weekly resource threads are gold."},
+{t:"Duolingo German",s:"duolingo.com",u:"https://www.duolingo.com/course/de/en/Learn-German",k:"tool",l:[1,2],free:1,tg:"app gamified beginner habit vocabulary",d:"Good at building a daily habit and early vocabulary, bad at getting you past A2. Use it as a warm-up, not as the plan."},
+];
+
+/* ================= TEXTS ================= */
+const TEXTS = [
+{lv:1,title:"Ein normaler Morgen",note:"Present tense · separable verbs · time expressions",
+ tip:"<b>Watch the verb.</b> In a plain German statement the conjugated verb is <em>always</em> the second element. Start a sentence with <code>Jeden Morgen</code> or <code>Dann</code> and the subject gets pushed behind the verb: <code>Dann fahre ich…</code>, never <code>Dann ich fahre…</code>. Get this one reflex right and you already sound like you know what you're doing.",
+ s:[
+ ["Ich heiße Lena und ich bin achtzehn Jahre alt.","My name is Lena and I am eighteen years old."],
+ ["Ich wohne in Hamburg, aber ich komme aus Dresden.","I live in Hamburg, but I'm originally from Dresden."],
+ ["Jeden Morgen stehe ich um sieben Uhr auf.","Every morning I get up at seven o'clock."],
+ ["Ich trinke einen Kaffee und esse ein Brot mit Käse.","I drink a coffee and eat a piece of bread with cheese."],
+ ["Dann fahre ich mit dem Fahrrad zur Schule.","Then I ride my bike to school."],
+ ["Die Schule beginnt um acht Uhr.","School starts at eight o'clock."],
+ ["Ich mag Deutsch und Musik, aber Mathe finde ich schwer.","I like German and music, but I find maths hard."],
+ ["Am Abend sehe ich fern oder ich lese ein Buch.","In the evening I watch TV or I read a book."],
+ ["Um elf Uhr gehe ich ins Bett. Gute Nacht!","At eleven o'clock I go to bed. Good night!"]
+]},
+{lv:2,title:"Im Supermarkt",note:"Perfect tense · haben vs. sein · everyday vocabulary",
+ tip:"<b>The past tense you actually speak.</b> In conversation Germans use the perfect: helper verb in position two, past participle thrown to the very end — <code>Ich <u>habe</u> alles <u>gekauft</u></code>. Most verbs take <em>haben</em>; verbs of movement and change of state take <em>sein</em> (<code>ich bin gegangen</code>). Learn the sein-verbs as a short list and you've covered it.",
+ s:[
+ ["Gestern bin ich nach der Arbeit in den Supermarkt gegangen.","Yesterday, after work, I went to the supermarket."],
+ ["Ich hatte einen Einkaufszettel, aber ich habe ihn zu Hause vergessen.","I had a shopping list, but I forgot it at home."],
+ ["Also habe ich einfach alles gekauft, was mir eingefallen ist.","So I just bought everything that came to mind."],
+ ["Brot, Butter, Eier, Tomaten und viel zu viel Schokolade.","Bread, butter, eggs, tomatoes and far too much chocolate."],
+ ["An der Kasse hat die Verkäuferin gefragt, ob ich eine Kundenkarte habe.","At the till the cashier asked whether I had a loyalty card."],
+ ["Ich habe „Nein, danke“ gesagt und mit Karte bezahlt.","I said “No, thanks” and paid by card."],
+ ["Zu Hause habe ich gemerkt, dass ich die Milch vergessen hatte.","At home I realised that I had forgotten the milk."],
+ ["Natürlich stand nur die Milch auf dem Zettel.","Of course, the only thing on the list was the milk."]
+]},
+{lv:3,title:"Warum ich Deutsch lerne",note:"Subordinate clauses · dass / weil / als · reflexive verbs",
+ tip:"<b>The verb goes to the end — but only in subclauses.</b> After <code>dass</code>, <code>weil</code>, <code>als</code>, <code>wenn</code> or <code>obwohl</code>, the conjugated verb drops to the final position: <code>…dass die Sprache eine Frage der Geduld <u>ist</u></code>. English speakers resist this for months. Read sentences 1, 2 and 5 aloud until the shape feels normal rather than backwards.",
+ s:[
+ ["Als ich angefangen habe, Deutsch zu lernen, dachte ich, es wäre nur eine Frage von Vokabeln.","When I started learning German, I thought it was just a question of vocabulary."],
+ ["Inzwischen weiß ich, dass die Sprache vor allem eine Frage der Geduld ist.","By now I know that the language is above all a question of patience."],
+ ["Die Grammatik wirkt am Anfang wie ein Gebäude ohne Türen.","At the beginning the grammar feels like a building without doors."],
+ ["Man steht davor, sieht die Fenster und versteht nicht, wie man hineinkommt.","You stand in front of it, see the windows, and don't understand how to get inside."],
+ ["Aber irgendwann gewöhnt man sich an die Endungen, und plötzlich hört man den Unterschied.","But at some point you get used to the endings, and suddenly you hear the difference."],
+ ["Was mir am meisten geholfen hat, waren nicht die Lehrbücher, sondern Podcasts.","What helped me most were not the textbooks, but podcasts."],
+ ["Ich habe sie gehört, während ich gekocht oder geputzt habe.","I listened to them while I was cooking or cleaning."],
+ ["Am Anfang habe ich fast nichts verstanden, nach einem halben Jahr ungefähr die Hälfte.","At the beginning I understood almost nothing; after six months, roughly half."],
+ ["Man merkt den Fortschritt nicht jeden Tag, aber er ist da.","You don't notice the progress every day, but it is there."]
+]},
+{lv:4,title:"Die deutsche Höflichkeit",note:"Nominalisation · weniger… als · relative clauses · register",
+ tip:"<b>Written German loves nouns.</b> Where English says “because people understand directness differently”, German reaches for <code>an einem anderen Verständnis von Direktheit</code>. This nominal style is why newspaper German feels dense — and learning to <em>unpack</em> it back into verbs is the core B2 reading skill. Try rewriting sentence 2 with a <code>weil</code> clause and see how the register drops.",
+ s:[
+ ["Wer zum ersten Mal nach Deutschland kommt, hält die Deutschen oft für unhöflich.","Anyone coming to Germany for the first time often takes Germans to be impolite."],
+ ["Das liegt weniger an schlechten Manieren als an einem anderen Verständnis von Direktheit.","That is due less to bad manners than to a different understanding of directness."],
+ ["Während man im Englischen einen Wunsch gern in drei Konjunktive verpackt, sagt man hier schlicht, was man möchte.","Whereas in English one likes to wrap a request in three subjunctives, here one simply says what one wants."],
+ ["„Können Sie mir bitte helfen?“ gilt bereits als ausgesprochen freundlich.","“Could you please help me?” already counts as extremely friendly."],
+ ["Umgekehrt wird übertriebene Freundlichkeit schnell als unehrlich empfunden.","Conversely, exaggerated friendliness is quickly perceived as insincere."],
+ ["Ein deutscher Kollege, der sagt, ein Vorschlag sei „schwierig“, meint damit meistens: nein.","A German colleague who says a proposal is “difficult” usually means: no."],
+ ["Hat man sich einmal daran gewöhnt, empfindet man diese Klarheit als angenehm.","Once you have got used to it, you come to find this clarity pleasant."],
+ ["Man weiß, woran man ist – und das ist, richtig verstanden, eine Form von Respekt.","You know where you stand – and that, properly understood, is a form of respect."]
+]},
+{lv:5,title:"Über das Übersetzen",note:"Essayistic register · extended attributes · subjunctive · irony",
+ tip:"<b>This is what C1 actually looks like.</b> Long subjects, embedded clauses, a verb you have to wait four lines for, and a dry joke you only get if you followed the whole sentence. Don't decode word by word — find the main verb first, then hang everything else off it. If you can read sentence 2 once and understand it, you are past the hard part.",
+ s:[
+ ["Es gehört zu den zweifelhaften Trostgründen des Sprachenlernens, dass man irgendwann aufhört zu übersetzen.","It is one of the dubious consolations of language learning that at some point you stop translating."],
+ ["Anfangs läuft im Kopf eine Art Simultandolmetscher mit, der jeden Satz zweimal produziert: einmal im Original, einmal im Behelfsdeutsch.","At first a kind of simultaneous interpreter runs along in your head, producing every sentence twice: once in the original, once in makeshift German."],
+ ["Dieser Dolmetscher ist langsam, humorlos und in Gesprächen chronisch überfordert.","This interpreter is slow, humourless, and chronically out of its depth in conversation."],
+ ["Sein Verschwinden bemerkt man nicht in dem Moment, in dem es geschieht, sondern erst Wochen später.","You don't notice its disappearance at the moment it happens, but only weeks later."],
+ ["Man erinnert sich an ein Gespräch und weiß nicht mehr, in welcher Sprache es geführt wurde.","You remember a conversation and no longer know which language it was held in."],
+ ["Von da an ist Deutsch keine Aufgabe mehr, sondern ein Ort, an dem man sich aufhalten kann.","From then on German is no longer a task, but a place you can dwell in."],
+ ["Dass man dort zunächst wie ein Gast wohnt und erst allmählich wie ein Bewohner, versteht sich von selbst.","That one lives there like a guest at first and only gradually like a resident goes without saying."]
+]}];
+
+/* ================= PLANS ================= */
+const PLANS = [
+{lv:1,goal:"Get to the point where German sounds like separate words instead of one long noise. Do not worry about cases yet.",
+ items:[["10 min","<b>Nicos Weg A1</b> — one lesson, watched twice: once with subtitles, once without."],
+        ["10 min","<b>Anki</b> — 10 new words a day, always with the article (<em>der/die/das</em>) glued on. Never learn a noun bare."],
+        ["10 min","<b>Super Easy German</b> or <b>Coffee Break German</b> while walking or washing up."],
+        ["5 min","Say three sentences about your day out loud. Badly is fine. Silence is not."]]},
+{lv:2,goal:"Start meeting real German that wasn't made for learners. Expect to understand a third of it — that's correct, not failure.",
+ items:[["10 min","<b>Nachrichtenleicht</b> — read one article, then listen to the same article."],
+        ["10 min","<b>Klexikon</b> — look up something you already know well and read it in German."],
+        ["10 min","<b>Ohrka</b> or <b>Slow German</b> — one short audio piece, listened to twice."],
+        ["10 min","<b>Anki</b>, plus write four sentences in the perfect tense about yesterday."]]},
+{lv:3,goal:"Cross from 'studying German' to 'using German'. This is where most people quit, and where the payoff actually starts.",
+ items:[["15 min","<b>Langsam gesprochene Nachrichten</b> — listen once cold, then once with the transcript."],
+        ["10 min","<b>Top-Thema mit Vokabeln</b> — one article, all exercises, harvest 5 words into Anki."],
+        ["15 min","<b>Easy German</b> on YouTube, German subtitles only. Cover the English half."],
+        ["Weekly","One 45-minute <b>italki</b> or <b>Tandem</b> conversation. Non-negotiable at this level."]]},
+{lv:4,goal:"Stop consuming learner material. From here on you learn German from things Germans made for themselves.",
+ items:[["15 min","<b>Tagesschau</b> or <b>Spiegel</b> — one full article, no dictionary on the first pass."],
+        ["20 min","A German series with <b>Language Reactor</b> dual subtitles — <em>Dark</em>, <em>Kleo</em>, <em>How to Sell Drugs Online</em>."],
+        ["15 min","<b>maiLab</b>, <b>MrWissen2go</b> or <b>radioWissen</b> — full speed, no subtitles, accept the gaps."],
+        ["10 min","Write a short opinion paragraph. Run it through <b>DeepL</b> afterwards and study only the differences."]]},
+{lv:5,goal:"Close the last gap: humour, irony, register, and the ability to argue. Read widely and read literature.",
+ items:[["30 min","<b>Die Zeit</b>, a <b>Projekt Gutenberg</b> novel, or a contemporary German paperback. Volume matters now."],
+        ["20 min","<b>STRG_F</b>, <b>Y-Kollektiv</b>, <b>Fest &amp; Flauschig</b> or <b>ZEIT Verbrechen</b> — unscripted, colloquial, regional."],
+        ["10 min","<b>Der Postillon</b>. If the satire lands without effort, your comprehension is genuinely native-adjacent."],
+        ["Weekly","Write something real — a letter, a review, a forum post — and get a native to tear it apart on <b>r/German</b>."]]}];
+
+/* ================= STATE ================= */
+const LV = {1:{n:"Noob",e:"🥚",c:"#7dd3a0",cefr:"A1"},2:{n:"Beginner",e:"🐣",c:"#8ec5f0",cefr:"A2"},
+             3:{n:"Intermediate",e:"🐦",c:"#f5c518",cefr:"B1"},4:{n:"High",e:"🦅",c:"#f0975e",cefr:"B2"},
+             5:{n:"Fluent",e:"🎓",c:"#e08bd0",cefr:"C1–C2"}};
+const KD = {read:"📖 Read",watch:"📺 Watch",listen:"🎧 Listen",tool:"🛠 Tool"};
+const store = {
+  get(k,f){ try{ return JSON.parse(localStorage.getItem("de_"+k)) ?? f }catch(e){ return f } },
+  set(k,v){ try{ localStorage.setItem("de_"+k,JSON.stringify(v)) }catch(e){} }
+};
+let favs = new Set(store.get("favs",[]));
+let fLv = new Set(store.get("fLv",[]));
+let fKd = new Set(store.get("fKd",[]));
+let fFl = new Set();
+let query = "";
+
+/* ================= RENDER LIBRARY ================= */
+const esc = s => s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const id  = it => it.t;
+
+function matches(it){
+  if(fLv.size && !it.l.some(l=>fLv.has(l))) return false;
+  if(fKd.size && !fKd.has(it.k)) return false;
+  if(fFl.has("free") && !it.free) return false;
+  if(fFl.has("dl")   && !it.dl)   return false;
+  if(fFl.has("fav")  && !favs.has(id(it))) return false;
+  if(query){
+    const hay = (it.t+" "+it.s+" "+it.d+" "+it.tg+" "+it.k+" "+
+                 it.l.map(l=>LV[l].n+" "+LV[l].cefr).join(" ")+
+                 (it.free?" free":" paid")+(it.dl?" downloadable offline":"")).toLowerCase();
+    if(!query.split(/\s+/).every(w=>hay.includes(w))) return false;
+  }
+  return true;
+}
+
+function cardHTML(it){
+  const starred = favs.has(id(it));
+  const lvs = it.l.map(l=>`<span class="b lv" style="background:${LV[l].c}">${LV[l].e} ${LV[l].n}</span>`).join("");
+  return `<article class="card">
+    <button class="fav" aria-pressed="${starred}" data-id="${esc(id(it))}" title="Star this">${starred?"★":"☆"}</button>
+    <h3><a href="${it.u}" target="_blank" rel="noopener">${esc(it.t)}</a></h3>
+    <div class="src">${esc(it.s)}</div>
+    <p>${esc(it.d)}</p>
+    <div class="meta">
+      <span class="b kind">${KD[it.k]}</span>${lvs}
+      ${it.dl?'<span class="b dl">⤓ offline</span>':''}
+      ${it.free?'':'<span class="b paid">paid</span>'}
+    </div></article>`;
+}
+
+function render(){
+  const hits = D.filter(matches);
+  document.getElementById("count").textContent =
+    hits.length ? `${hits.length} of ${D.length} resources` : "";
+  const box = document.getElementById("results");
+  if(!hits.length){
+    box.innerHTML = `<div class="empty">Nothing matches that.<br><br>
+      <button class="themebtn" id="clr">Clear all filters</button></div>`;
+    document.getElementById("clr").onclick = ()=>{
+      fLv.clear();fKd.clear();fFl.clear();query="";document.getElementById("q").value="";
+      persist();syncChips();render();
+    };
+    return;
+  }
+  const order = ["read","watch","listen","tool"];
+  const groups = order.map(k=>[k,hits.filter(h=>h.k===k)]).filter(g=>g[1].length);
+  box.innerHTML = groups.map(([k,list])=>{
+    // within a group, easiest material first
+    list.sort((a,b)=>Math.min(...a.l)-Math.min(...b.l));
+    return `<h2 class="sec">${KD[k]} <span style="text-transform:none;letter-spacing:0;font-weight:400">(${list.length})</span></h2>
+            <div class="grid">${list.map(cardHTML).join("")}</div>`;
+  }).join("");
+  box.querySelectorAll(".fav").forEach(b=>b.onclick=e=>{
+    e.preventDefault(); e.stopPropagation();
+    const k=b.dataset.id;
+    favs.has(k)?favs.delete(k):favs.add(k);
+    store.set("favs",[...favs]); render();
+  });
+}
+
+function persist(){ store.set("fLv",[...fLv]); store.set("fKd",[...fKd]); }
+// scoped to .controls — the reader tab reuses .chip.lv for its own level picker
+const ctl = s => document.querySelectorAll(".controls "+s);
+function syncChips(){
+  ctl(".chip.lv").forEach(c=>c.setAttribute("aria-pressed",fLv.has(+c.dataset.lv)));
+  ctl(".chip.kd").forEach(c=>c.setAttribute("aria-pressed",fKd.has(c.dataset.kd)));
+  ctl(".chip.fl").forEach(c=>c.setAttribute("aria-pressed",fFl.has(c.dataset.fl)));
+}
+function toggle(set,val){ set.has(val)?set.delete(val):set.add(val); }
+
+ctl(".chip.lv").forEach(c=>c.onclick=()=>{toggle(fLv,+c.dataset.lv);persist();syncChips();render()});
+ctl(".chip.kd").forEach(c=>c.onclick=()=>{toggle(fKd,c.dataset.kd);persist();syncChips();render()});
+ctl(".chip.fl").forEach(c=>c.onclick=()=>{toggle(fFl,c.dataset.fl);syncChips();render()});
+
+const qEl = document.getElementById("q");
+qEl.addEventListener("input",()=>{ query=qEl.value.trim().toLowerCase(); render(); });
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && document.activeElement!==qEl && document.getElementById("library").classList.contains("on")){
+    e.preventDefault(); qEl.focus(); qEl.select();
+  }
+  if(e.key==="Escape" && document.activeElement===qEl){ qEl.value=""; query=""; render(); qEl.blur(); }
+});
+
+/* ================= READER ================= */
+let curLv = store.get("readLv",1);
+function renderPicker(){
+  document.getElementById("lvpick").innerHTML = TEXTS.map(t=>
+    `<button class="chip lv" style="--lvc:${LV[t.lv].c}" data-t="${t.lv}" aria-pressed="${t.lv===curLv}">${LV[t.lv].e} ${LV[t.lv].n}</button>`).join("");
+  document.querySelectorAll("#lvpick .chip").forEach(b=>b.onclick=()=>{
+    curLv=+b.dataset.t; store.set("readLv",curLv); renderPicker(); renderText();
+  });
+}
+function renderText(){
+  const t = TEXTS.find(x=>x.lv===curLv);
+  document.getElementById("rmeta").textContent = `${LV[t.lv].n} · ${LV[t.lv].cefr} · ${t.s.length} sentences`;
+  document.getElementById("textbox").innerHTML =
+    `<h2 class="title">${t.title}</h2><p class="note">${t.note} — tap any line for the English</p>` +
+    t.s.map(([de,en])=>`<div class="sent"><div class="de">${de}</div><div class="en">${en}</div></div>`).join("");
+  document.getElementById("rtip").innerHTML = t.tip;
+  document.querySelectorAll("#textbox .sent").forEach(s=>s.onclick=()=>s.classList.toggle("open"));
+  document.getElementById("revealAll").textContent="Reveal all translations";
+}
+document.getElementById("revealAll").onclick=function(){
+  const all=[...document.querySelectorAll("#textbox .sent")];
+  const open=all.every(s=>s.classList.contains("open"));
+  all.forEach(s=>s.classList.toggle("open",!open));
+  this.textContent = open ? "Reveal all translations" : "Hide all translations";
+};
+
+/* ================= PLANS ================= */
+document.getElementById("plans").innerHTML = PLANS.map(p=>`
+  <div class="plan">
+    <h3><span style="width:9px;height:9px;border-radius:50%;background:${LV[p.lv].c};display:inline-block"></span>
+        ${LV[p.lv].e} ${LV[p.lv].n} <span class="cefr">${LV[p.lv].cefr}</span></h3>
+    <p class="goal">${p.goal}</p>
+    <ol>${p.items.map(([m,x])=>`<li><span class="m">${m}</span>${x}</li>`).join("")}</ol>
+  </div>`).join("");
+
+/* ================= TABS / THEME ================= */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===b.dataset.panel));
+  window.scrollTo({top:0,behavior:"instant"});
+});
+const themeBtn=document.getElementById("theme");
+const savedTheme=store.get("theme","dark");
+document.documentElement.dataset.theme=savedTheme;
+themeBtn.onclick=()=>{
+  const n=document.documentElement.dataset.theme==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=n; store.set("theme",n);
+};
+
+syncChips(); render(); renderPicker(); renderText();
+</script>
+</body>
+</html>
