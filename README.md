@@ -22,7 +22,18 @@ No build step, no dependencies, no tracking. It's one `index.html` file. Open it
 
 Also filterable by type (📖 Read / 📺 Watch / 🎧 Listen / 🛠 Tools), by free-vs-paid, and by whether the material is genuinely downloadable for offline use. Press <kbd>/</kbd> to jump to the search box.
 
-**Parallel Reader** — five original German texts, one per level, from *"Ich heiße Lena"* up to a C1 essay on translation. Tap any sentence to reveal the English. Each text comes with a note on the one grammar point that defines that level.
+**Parallel Reader** — **30 original German texts, 256 sentence pairs**, from *"Ich heiße Lena"* up to a C1 essay on translation. Tap any sentence to reveal the English. Every text carries a grammar note explaining the one thing it's really teaching, and you can page through texts with Previous / Next.
+
+Filter by level and by category:
+
+| Category | | What's in it |
+|---|---|---|
+| ☕ **Alltag** | Everyday life | Mornings, the bakery, flat-hunting, the doctor, moving house |
+| 💬 **Gespräche** | Dialogues | Introductions, ordering coffee, a flatmate row, a job interview, party small talk |
+| 🏛 **Land & Leute** | Culture | German Sundays, recycling, politeness, *Feierabend*, East and West |
+| 📗 **Geschichten** | Stories | Original short fiction — a lost key, a stranger on a train, an empty house |
+| 🔬 **Wissen** | Explainers | Why we yawn, how caffeine works, why German words are long, Gutenberg |
+| ✍️ **Meinung** | Opinion | Essays on learning German, cash vs. cards, translation, and hurry |
 
 **Daily Plan** — a 30–45 minute routine for each level, pointing at specific resources in the library.
 
@@ -56,7 +67,19 @@ Everything lives in `index.html`. The data is plain JavaScript arrays near the b
  d:"One or two sentences on why it's worth your time."},
 ```
 
-**Add a reading text** — append to the `TEXTS` array. `s` is an array of `[german, english]` sentence pairs.
+**Add a reading text** — append to the `TEXTS` array:
+
+```js
+{lv:3,                        // 1 Noob … 5 Fluent
+ cat:"story",                 // alltag | dialog | kultur | story | wissen | essay
+ title:"Die Frau im Zug",
+ note:"What this text drills", // shown on the browse card
+ tip:"<b>Grammar note.</b> …", // HTML allowed; shown under the text
+ s:[["German sentence.","English translation."],
+    ["Nächster Satz.","Next sentence."]]},
+```
+
+In the `dialog` category, prefix a line with `"A: "` / `"B: "` and the speaker tag gets styled automatically.
 
 **Add to a daily plan** — edit the `PLANS` array.
 
@@ -66,6 +89,8 @@ Starred items, filters, chosen theme and reader level are stored in `localStorag
 
 ## Notes
 
-Nothing copyrighted is bundled into this repo — it links out rather than mirroring, so it won't rot the way a scraped archive would. The German in the Parallel Reader is original writing, not quoted literature.
+Nothing copyrighted is bundled into this repo — it links out rather than mirroring, so it won't rot the way a scraped archive would. **All 30 reader texts are original writing**, not excerpts from books or websites. That's deliberate: it keeps the repo clean of other people's material, and it means the vocabulary and grammar can be graded to hit one target per text, which scraped prose can't do.
+
+For real German literature, the library links to Project Gutenberg and LibriVox, where the public-domain canon lives in full.
 
 Some ARD/ZDF *video* is geo-restricted to German IP addresses. Their news and children's programming generally isn't — which happens to be exactly what a learner wants anyway.

@@ -125,6 +125,13 @@
   /* ---------- reader ---------- */
   .readerwrap{max-width:760px;margin:0 auto}
   .lvpicker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px;justify-content:center}
+  .tcard{cursor:pointer}
+  .tcard h3{padding-right:0}
+  .tcard .cat{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);font-weight:600}
+  .readnav{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap}
+  .readnav .themebtn[disabled]{opacity:.35;cursor:default}
+  .speaker{font-family:var(--mono);font-size:12px;color:var(--acc);margin-right:7px;font-weight:600}
+  #browse .chips{margin-bottom:4px}
   .text{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px 28px}
   .text .title{font-family:var(--serif);font-size:24px;margin:0 0 4px;letter-spacing:-.01em}
   .text .note{font-size:12.5px;color:var(--fg3);margin:0 0 20px}
@@ -226,15 +233,26 @@
 
 <!-- ============ READER ============ -->
 <section class="panel" id="reader">
-  <main><div class="wrap"><div class="readerwrap">
-    <div class="lvpicker" id="lvpick"></div>
-    <div class="readctl">
-      <span class="src" id="rmeta"></span>
-      <button class="themebtn" id="revealAll">Reveal all translations</button>
+  <main><div class="wrap">
+    <div id="browse">
+      <div class="chips" id="rcats"></div>
+      <div class="chips" id="rlvs"></div>
+      <div class="grid" id="textlist" style="margin-top:20px"></div>
     </div>
-    <div class="text" id="textbox"></div>
-    <div class="tip" id="rtip"></div>
-  </div></div></main>
+    <div class="readerwrap" id="readview" hidden>
+      <div class="readctl">
+        <button class="themebtn" id="backBtn">← All texts</button>
+        <button class="themebtn" id="revealAll">Reveal all translations</button>
+      </div>
+      <div class="text" id="textbox"></div>
+      <div class="tip" id="rtip"></div>
+      <div class="readnav">
+        <button class="themebtn" id="prevBtn">← Previous</button>
+        <span class="src" id="rmeta"></span>
+        <button class="themebtn" id="nextBtn">Next →</button>
+      </div>
+    </div>
+  </div></main>
 </section>
 
 <!-- ============ PLAN ============ -->
@@ -371,8 +389,21 @@ const D = [
 ];
 
 /* ================= TEXTS ================= */
+// All German below is original writing, graded per level — not excerpted from
+// copyrighted sources. cat: alltag|dialog|kultur|story|wissen|essay
+const CATS = {
+  alltag:{de:"Alltag",       en:"Everyday life", e:"☕"},
+  dialog:{de:"Gespräche",    en:"Dialogues",     e:"💬"},
+  kultur:{de:"Land & Leute", en:"Culture",       e:"🏛"},
+  story: {de:"Geschichten",  en:"Stories",       e:"📗"},
+  wissen:{de:"Wissen",       en:"Explainers",    e:"🔬"},
+  essay: {de:"Meinung",      en:"Opinion",       e:"✍️"}
+};
+
 const TEXTS = [
-{lv:1,title:"Ein normaler Morgen",note:"Present tense · separable verbs · time expressions",
+
+/* ---------------- ALLTAG ---------------- */
+{lv:1,cat:"alltag",title:"Ein normaler Morgen",note:"Present tense · separable verbs · time expressions",
  tip:"<b>Watch the verb.</b> In a plain German statement the conjugated verb is <em>always</em> the second element. Start a sentence with <code>Jeden Morgen</code> or <code>Dann</code> and the subject gets pushed behind the verb: <code>Dann fahre ich…</code>, never <code>Dann ich fahre…</code>. Get this one reflex right and you already sound like you know what you're doing.",
  s:[
  ["Ich heiße Lena und ich bin achtzehn Jahre alt.","My name is Lena and I am eighteen years old."],
@@ -385,7 +416,35 @@ const TEXTS = [
  ["Am Abend sehe ich fern oder ich lese ein Buch.","In the evening I watch TV or I read a book."],
  ["Um elf Uhr gehe ich ins Bett. Gute Nacht!","At eleven o'clock I go to bed. Good night!"]
 ]},
-{lv:2,title:"Im Supermarkt",note:"Perfect tense · haben vs. sein · everyday vocabulary",
+
+{lv:1,cat:"alltag",title:"Meine Familie",note:"haben & sein · possessives · plural nouns",
+ tip:"<b>Learn every noun with its article.</b> Not <code>Hund</code> but <code>der Hund</code>; not <code>Schwester</code> but <code>die Schwester</code>. German gender is not guessable from meaning, and a noun learned bare has to be relearned later — which costs far more than getting it right now. Possessives copy the gender: <code>mein Vater</code>, <code>meine Mutter</code>, <code>mein Hund</code>.",
+ s:[
+ ["Das ist meine Familie. Wir sind vier Personen.","This is my family. There are four of us."],
+ ["Mein Vater heißt Thomas und ist Lehrer.","My father is called Thomas and is a teacher."],
+ ["Meine Mutter heißt Sabine. Sie arbeitet in einem Krankenhaus.","My mother is called Sabine. She works in a hospital."],
+ ["Ich habe eine Schwester. Sie heißt Mia und ist zwölf Jahre alt.","I have a sister. Her name is Mia and she is twelve years old."],
+ ["Wir haben auch einen Hund. Er heißt Bruno und ist sehr groß.","We also have a dog. He is called Bruno and he is very big."],
+ ["Meine Großeltern wohnen nicht hier. Sie wohnen in Österreich.","My grandparents don't live here. They live in Austria."],
+ ["Am Wochenende besuchen wir sie manchmal.","At the weekend we sometimes visit them."],
+ ["Ich mag meine Familie sehr.","I like my family very much."]
+]},
+
+{lv:1,cat:"alltag",title:"In der Bäckerei",note:"möchten · accusative objects · polite forms",
+ tip:"<b>Your first case.</b> The direct object switches <code>der</code> → <code>den</code> and <code>ein</code> → <code>einen</code> — but <em>only</em> for masculine nouns. <code>die</code>, <code>das</code>, <code>eine</code> and <code>ein</code> (neuter) don't change at all. So three quarters of the accusative is already free; learn the masculine one and you've learned the case.",
+ s:[
+ ["Ich gehe jeden Samstag in die Bäckerei.","I go to the bakery every Saturday."],
+ ["Die Bäckerei ist klein, aber das Brot ist sehr gut.","The bakery is small, but the bread is very good."],
+ ["„Guten Morgen! Was möchten Sie?“, fragt die Verkäuferin.","“Good morning! What would you like?” asks the shop assistant."],
+ ["„Ich möchte bitte zwei Brötchen und ein Stück Kuchen.“","“I'd like two rolls and a piece of cake, please.”"],
+ ["„Möchten Sie sonst noch etwas?“","“Would you like anything else?”"],
+ ["„Nein danke, das ist alles.“","“No thank you, that's all.”"],
+ ["„Das macht vier Euro zwanzig.“","“That comes to four euros twenty.”"],
+ ["Ich bezahle und sage: „Schönen Tag noch!“","I pay and say: “Have a nice day!”"],
+ ["Zu Hause esse ich die Brötchen mit Marmelade.","At home I eat the rolls with jam."]
+]},
+
+{lv:2,cat:"alltag",title:"Im Supermarkt",note:"Perfect tense · haben vs. sein · everyday vocabulary",
  tip:"<b>The past tense you actually speak.</b> In conversation Germans use the perfect: helper verb in position two, past participle thrown to the very end — <code>Ich <u>habe</u> alles <u>gekauft</u></code>. Most verbs take <em>haben</em>; verbs of movement and change of state take <em>sein</em> (<code>ich bin gegangen</code>). Learn the sein-verbs as a short list and you've covered it.",
  s:[
  ["Gestern bin ich nach der Arbeit in den Supermarkt gegangen.","Yesterday, after work, I went to the supermarket."],
@@ -397,7 +456,313 @@ const TEXTS = [
  ["Zu Hause habe ich gemerkt, dass ich die Milch vergessen hatte.","At home I realised that I had forgotten the milk."],
  ["Natürlich stand nur die Milch auf dem Zettel.","Of course, the only thing on the list was the milk."]
 ]},
-{lv:3,title:"Warum ich Deutsch lerne",note:"Subordinate clauses · dass / weil / als · reflexive verbs",
+
+{lv:2,cat:"alltag",title:"Eine Wohnung finden",note:"Perfect tense in narrative · dass-clauses · dative prepositions",
+ tip:"<b>Two-way prepositions.</b> <code>in</code>, <code>auf</code>, <code>an</code>, <code>über</code> and friends take the accusative for movement <em>towards</em> and the dative for position. <code>Ich gehe in die Wohnung</code> (going in) versus <code>Ich wohne in der Wohnung</code> (already there). Ask yourself “wohin?” or “wo?” and the case answers itself.",
+ s:[
+ ["Letzten Monat habe ich eine neue Wohnung gesucht.","Last month I looked for a new flat."],
+ ["In Berlin ist das leider nicht einfach.","In Berlin that is unfortunately not easy."],
+ ["Ich habe jeden Tag im Internet nach Anzeigen geschaut.","Every day I looked online for adverts."],
+ ["Bei der ersten Besichtigung waren dreißig andere Leute da.","At the first viewing there were thirty other people."],
+ ["Der Makler hat gesagt, dass er sich am Abend meldet.","The estate agent said that he would get in touch in the evening."],
+ ["Er hat sich nie gemeldet.","He never got in touch."],
+ ["Nach zwei Monaten hat es endlich geklappt.","After two months it finally worked out."],
+ ["Die Wohnung ist klein und liegt im vierten Stock ohne Aufzug.","The flat is small and is on the fourth floor with no lift."],
+ ["Aber sie hat einen Balkon, und darauf war ich sehr stolz.","But it has a balcony, and I was very proud of that."]
+]},
+
+{lv:3,cat:"alltag",title:"Beim Arzt",note:"Modal verbs · seit + dative · reported speech",
+ tip:"<b><code>seit</code> means “for” and takes the present tense.</b> German says <code>Ich habe seit einer Woche Halsschmerzen</code> — literally “I have since a week”, present tense, because the sore throat is still happening. English insists on “I have <em>had</em>”. This trips up English speakers for years; fix it now and it stays fixed.",
+ s:[
+ ["Seit einer Woche habe ich Halsschmerzen, deshalb bin ich heute zum Arzt gegangen.","I've had a sore throat for a week, so I went to the doctor today."],
+ ["In der Praxis musste ich zuerst meine Versichertenkarte abgeben.","At the practice I first had to hand in my insurance card."],
+ ["Dann habe ich vierzig Minuten im Wartezimmer gesessen und alte Zeitschriften gelesen.","Then I sat in the waiting room for forty minutes and read old magazines."],
+ ["Die Ärztin hat mich gefragt, seit wann ich die Beschwerden habe.","The doctor asked me how long I'd had the symptoms."],
+ ["Ich habe erklärt, dass es angefangen hat, nachdem ich im Regen Fahrrad gefahren bin.","I explained that it had started after I'd cycled in the rain."],
+ ["Sie hat mir in den Hals geschaut und gesagt, es sei nur eine Erkältung.","She looked into my throat and said it was only a cold."],
+ ["Ich soll viel trinken, mich ausruhen und in drei Tagen wiederkommen, falls es schlimmer wird.","I should drink plenty, rest, and come back in three days if it gets worse."],
+ ["Außerdem hat sie mich für zwei Tage krankgeschrieben.","She also signed me off sick for two days."],
+ ["Ehrlich gesagt war das der beste Teil des Termins.","Honestly, that was the best part of the appointment."]
+]},
+
+{lv:4,cat:"alltag",title:"Der Umzug",note:"Relative clauses · impersonal man · bureaucratic register",
+ tip:"<b>German bureaucracy is a vocabulary set.</b> <code>ummelden</code>, <code>Bußgeld</code>, <code>Wohnungsgeberbestätigung</code>, <code>Rundfunkbeitrag</code> — these are compounds you can dismantle. <code>Wohnungs·geber·bestätigung</code> = flat-giver-confirmation. The final noun carries the meaning and the gender, so it's <em>die</em> Bestätigung. Learn to split, and the scary words stop being scary.",
+ s:[
+ ["Wer in Deutschland umzieht, lernt schnell, dass ein Umzug vor allem aus Papier besteht.","Anyone who moves house in Germany quickly learns that moving consists mainly of paperwork."],
+ ["Innerhalb von zwei Wochen muss man sich beim Einwohnermeldeamt ummelden, sonst droht ein Bußgeld.","Within two weeks you have to register your new address at the residents' registration office, otherwise you face a fine."],
+ ["Dafür braucht man eine Wohnungsgeberbestätigung, ein Dokument, von dem vorher niemand je gehört hat.","For that you need a landlord's confirmation, a document nobody has ever heard of before."],
+ ["Anschließend informiert man Bank, Versicherung, Arbeitgeber und den Rundfunkbeitragsservice.","Afterwards you inform your bank, your insurer, your employer and the broadcasting fee service."],
+ ["Letzterer findet einen ohnehin, auch wenn man ihm nichts sagt.","The latter finds you anyway, even if you tell it nothing."],
+ ["Die eigentlichen Kartons trägt man dann an einem Samstag mit Freunden, die man mit Pizza bezahlt.","The actual boxes you then carry on a Saturday with friends whom you pay in pizza."],
+ ["Am Ende sitzt man erschöpft zwischen halb ausgepackten Kisten auf dem Boden.","In the end you sit exhausted on the floor among half-unpacked boxes."],
+ ["Und stellt fest, dass der Kaffee ganz unten in der letzten Kiste liegt.","And realise that the coffee is right at the bottom of the last box."]
+]},
+
+/* ---------------- GESPRÄCHE ---------------- */
+{lv:1,cat:"dialog",title:"Erste Begegnung",note:"Introductions · W-questions · du vs. Sie",
+ tip:"<b>du or Sie?</b> <code>du</code> for friends, family, children, students and most people under about thirty in casual settings. <code>Sie</code> for strangers, officials, shop staff, colleagues you don't know, and anyone older. If you're unsure, use <code>Sie</code> — being slightly too formal is invisible; being too familiar is not. The other person will offer <code>du</code> when they're ready.",
+ s:[
+ ["A: Hallo! Ich heiße Ben. Wie heißt du?","A: Hello! My name is Ben. What's your name?"],
+ ["B: Ich heiße Sofia. Freut mich!","B: My name is Sofia. Nice to meet you!"],
+ ["A: Woher kommst du, Sofia?","A: Where are you from, Sofia?"],
+ ["B: Ich komme aus Italien, aus Neapel. Und du?","B: I'm from Italy, from Naples. And you?"],
+ ["A: Ich komme aus Köln, aber ich wohne jetzt in Leipzig.","A: I'm from Cologne, but I live in Leipzig now."],
+ ["B: Und was machst du hier?","B: And what are you doing here?"],
+ ["A: Ich studiere Informatik. Und du?","A: I'm studying computer science. And you?"],
+ ["B: Ich arbeite in einem Café und lerne Deutsch.","B: I work in a café and I'm learning German."],
+ ["A: Dein Deutsch ist schon sehr gut!","A: Your German is already very good!"],
+ ["B: Danke, das ist nett. Aber es ist noch schwer.","B: Thanks, that's kind. But it's still hard."]
+]},
+
+{lv:2,cat:"dialog",title:"Im Café",note:"Ordering · ich hätte gern · könnte + infinitive",
+ tip:"<b><code>Ich hätte gern</code> is your magic phrase.</b> It's the polite way to order anything, anywhere, and it never changes. <code>Ich möchte</code> works too. Avoid <code>Ich will</code> — grammatically fine, but it lands like “I want”, said by a toddler. One phrase, memorised, covers every counter and every restaurant in the country.",
+ s:[
+ ["A: Entschuldigung, ist der Platz hier noch frei?","A: Excuse me, is this seat still free?"],
+ ["B: Ja, klar. Setzen Sie sich.","B: Yes, of course. Have a seat."],
+ ["A: Danke schön.","A: Thank you."],
+ ["K: Guten Tag, was darf es sein?","K: Hello, what can I get you?"],
+ ["A: Ich hätte gern einen Milchkaffee und ein Stück Apfelkuchen.","A: I'd like a milky coffee and a piece of apple cake."],
+ ["K: Möchten Sie den Kuchen mit Sahne?","K: Would you like the cake with cream?"],
+ ["A: Ja, gern. Und könnte ich bitte noch ein Glas Wasser haben?","A: Yes, please. And could I have a glass of water as well?"],
+ ["K: Natürlich. Ich bringe Ihnen alles gleich.","K: Of course. I'll bring you everything right away."],
+ ["A: Vielen Dank.","A: Thank you very much."],
+ ["B: Der Apfelkuchen hier ist übrigens der beste in der Stadt.","B: The apple cake here is the best in town, by the way."]
+]},
+
+{lv:3,cat:"dialog",title:"Wer macht den Abwasch?",note:"Arguing · modal verbs in the past · flat-share German",
+ tip:"<b>Flavouring particles.</b> <code>doch</code>, <code>mal</code>, <code>ja</code>, <code>eben</code>, <code>halt</code> carry almost no dictionary meaning but do enormous emotional work. <code>Sag mal…</code> softens a challenge into curiosity. <code>Das sagst du doch jedes Mal</code> adds an exasperated “as you well know”. You cannot translate them; you absorb them from dialogue like this one.",
+ s:[
+ ["A: Sag mal, hast du gestern wieder das Geschirr stehen lassen?","A: Tell me, did you leave the dishes out again yesterday?"],
+ ["B: Ich wollte es heute Morgen machen, aber ich musste früh raus.","B: I was going to do it this morning, but I had to leave early."],
+ ["A: Das sagst du jedes Mal.","A: You say that every time."],
+ ["B: Und du bringst nie den Müll runter, aber darüber reden wir nie.","B: And you never take the rubbish down, but we never talk about that."],
+ ["A: Okay, das stimmt. Vielleicht sollten wir einen Plan machen.","A: Okay, that's true. Maybe we should make a schedule."],
+ ["B: Einen Putzplan? Im Ernst?","B: A cleaning rota? Seriously?"],
+ ["A: Warum nicht? Dann müssen wir uns wenigstens nicht mehr streiten.","A: Why not? Then at least we won't have to argue any more."],
+ ["B: Na gut. Aber ich schreibe ihn, sonst bleibt am Ende alles an mir hängen.","B: All right. But I'll write it, otherwise I'll end up stuck with everything."],
+ ["A: Abgemacht.","A: Deal."]
+]},
+
+{lv:4,cat:"dialog",title:"Das Vorstellungsgespräch",note:"Professional register · Sie throughout · indirect questions",
+ tip:"<b>Interview German is formulaic — and that's good news.</b> <code>Erzählen Sie doch kurz etwas über sich</code>, <code>Was reizt Sie an dieser Stelle?</code>, <code>Wann kann ich mit einer Rückmeldung rechnen?</code> recur almost verbatim. Learn eight or nine of these as fixed blocks and you free up all your attention for the actual answers.",
+ s:[
+ ["A: Schön, dass Sie da sind. Erzählen Sie doch kurz etwas über sich.","A: Good of you to come. Do tell us a bit about yourself."],
+ ["B: Gern. Ich habe Wirtschaftsinformatik studiert und arbeite seit vier Jahren im Bereich Datenanalyse.","B: Gladly. I studied business informatics and have worked in data analysis for four years."],
+ ["A: Was reizt Sie an dieser Stelle besonders?","A: What appeals to you particularly about this position?"],
+ ["B: Vor allem, dass Sie Produkt und Analyse eng verzahnen. In meiner jetzigen Firma sind das zwei getrennte Welten.","B: Above all that you link product and analysis closely. At my current company those are two separate worlds."],
+ ["A: Wo sehen Sie Ihre größte Schwäche?","A: Where do you see your greatest weakness?"],
+ ["B: Ich neige dazu, Dinge zu lange selbst zu machen, statt sie abzugeben. Daran arbeite ich.","B: I tend to keep doing things myself for too long instead of delegating them. I'm working on that."],
+ ["A: Haben Sie Fragen an uns?","A: Do you have any questions for us?"],
+ ["B: Ja: Wie sieht die Einarbeitung in den ersten drei Monaten aus?","B: Yes: what does the onboarding look like in the first three months?"],
+ ["A: Gute Frage. Sie bekommen einen festen Ansprechpartner und einen Plan für die ersten Wochen.","A: Good question. You get a dedicated contact person and a plan for the first weeks."],
+ ["B: Das klingt gut. Wann kann ich mit einer Rückmeldung rechnen?","B: That sounds good. When can I expect to hear back?"]
+]},
+
+{lv:5,cat:"dialog",title:"Small Talk, den keiner will",note:"Irony · subjunctive II · als ob · conversational parry",
+ tip:"<b>Irony is the last thing you acquire.</b> Notice that none of the jokes here are marked as jokes — no signal, no smile emoji, just a flat statement delivered one degree off literal (<code>Es ist genau so spannend, wie es klingt</code>). German humour frequently works this way, and mistaking it for sincerity is the most common late-stage misunderstanding.",
+ s:[
+ ["A: Und, was machst du so beruflich?","A: So, what do you do for a living?"],
+ ["B: Ich arbeite in der Verwaltung. Es ist genau so spannend, wie es klingt.","B: I work in administration. It's exactly as exciting as it sounds."],
+ ["A: Immerhin ehrlich. Die meisten hier tun so, als würden sie die Welt retten.","A: Honest, at least. Most people here act as though they were saving the world."],
+ ["B: Das liegt an der Beleuchtung. Bei diesem Licht klingt jede Tätigkeit nach Berufung.","B: That's the lighting. In this light every occupation sounds like a calling."],
+ ["A: Du bist zum ersten Mal auf so einer Veranstaltung, oder?","A: This is your first time at an event like this, isn't it?"],
+ ["B: Woran merkt man das?","B: How can you tell?"],
+ ["A: Du hältst dein Glas so fest, als könnte es weglaufen.","A: You're gripping your glass as if it might run away."],
+ ["B: Es ist das Einzige hier, mit dem ich mich problemlos unterhalten kann.","B: It's the only thing here I can converse with without difficulty."],
+ ["A: Dann sind wir schon zu zweit. Komm, wir stellen uns ans Fenster und beobachten die anderen.","A: Then that makes two of us. Come on, let's stand by the window and watch the others."]
+]},
+
+/* ---------------- LAND & LEUTE ---------------- */
+{lv:1,cat:"kultur",title:"Deutschland: ein paar Zahlen",note:"es gibt · numbers · geography vocabulary",
+ tip:"<b><code>es gibt</code> means “there is” and “there are”</b> — one form, always followed by the accusative, never changing for singular or plural. <code>Es gibt sechzehn Bundesländer.</code> <code>Es gibt einen Bahnhof.</code> It is one of the highest-value phrases in the language and costs you nothing to learn.",
+ s:[
+ ["Deutschland liegt in der Mitte von Europa.","Germany lies in the middle of Europe."],
+ ["Das Land hat neun Nachbarn.","The country has nine neighbours."],
+ ["In Deutschland leben etwa 84 Millionen Menschen.","About 84 million people live in Germany."],
+ ["Die Hauptstadt ist Berlin. Berlin ist auch die größte Stadt.","The capital is Berlin. Berlin is also the biggest city."],
+ ["Es gibt sechzehn Bundesländer.","There are sixteen federal states."],
+ ["Im Norden ist das Meer, im Süden sind die Alpen.","In the north is the sea, in the south are the Alps."],
+ ["Man spricht Deutsch auch in Österreich, in der Schweiz und in Liechtenstein.","German is also spoken in Austria, Switzerland and Liechtenstein."],
+ ["Viele Menschen lernen Deutsch. Du auch!","Many people learn German. You too!"]
+]},
+
+{lv:2,cat:"kultur",title:"Der Sonntag",note:"man · modal verbs · negation with kein",
+ tip:"<b><code>nicht</code> or <code>kein</code>?</b> Use <code>kein</code> to negate a noun that has <em>ein</em> or no article at all: <code>keine Milch</code>, <code>kein Paket</code>. Use <code>nicht</code> for everything else — verbs, adjectives, and nouns with <em>der/die/das</em>. That single rule covers almost all German negation.",
+ s:[
+ ["Am Sonntag sind in Deutschland fast alle Geschäfte geschlossen.","On Sundays almost all shops in Germany are closed."],
+ ["Für viele Ausländer ist das am Anfang ein Schock.","For many foreigners that is a shock at first."],
+ ["Man kann keine Milch kaufen und kein Paket abholen.","You can't buy milk or pick up a parcel."],
+ ["Nur die Bäckerei am Bahnhof hat ein paar Stunden geöffnet.","Only the bakery at the station is open for a few hours."],
+ ["Man darf auch nicht laut sein, denn der Sonntag ist ein Ruhetag.","You're also not allowed to be loud, because Sunday is a day of rest."],
+ ["Das heißt in vielen Häusern: keine Waschmaschine, kein Bohren, kein Rasenmähen.","In many buildings that means: no washing machine, no drilling, no lawn-mowing."],
+ ["Stattdessen gehen viele Familien spazieren oder essen zusammen Kuchen.","Instead, many families go for a walk or have cake together."],
+ ["Am Anfang fand ich das seltsam, heute mag ich es sehr.","At first I found that strange; today I like it a lot."],
+ ["Ein Tag in der Woche, an dem nichts passieren muss, ist ein Geschenk.","One day a week on which nothing has to happen is a gift."]
+]},
+
+{lv:3,cat:"kultur",title:"Mülltrennung",note:"Passive-like constructions · relative clauses · weil",
+ tip:"<b>Word order in relative clauses.</b> <code>Glas wirft man in Container, die nach Farben sortiert <u>sind</u></code> — the relative pronoun (<em>die</em>) opens the clause and the verb goes to the very end. The pronoun's gender comes from the noun it refers back to, but its case comes from its job inside the clause. Two different sources; that's the whole difficulty.",
+ s:[
+ ["Wer nach Deutschland zieht, muss als Erstes lernen, den Müll zu trennen.","Anyone who moves to Germany has to learn first of all to separate their rubbish."],
+ ["Es gibt eine blaue Tonne für Papier, eine gelbe für Verpackungen und eine braune für Biomüll.","There is a blue bin for paper, a yellow one for packaging and a brown one for organic waste."],
+ ["Alles, was übrig bleibt, kommt in die graue Restmülltonne.","Everything that's left over goes in the grey general waste bin."],
+ ["Glas wirft man in Container, die nach Farben sortiert sind: weiß, grün und braun.","Glass goes into containers that are sorted by colour: white, green and brown."],
+ ["Und Flaschen aus Plastik bringt man in den Supermarkt zurück, weil man Pfand darauf bezahlt hat.","And plastic bottles you take back to the supermarket, because you paid a deposit on them."],
+ ["Das klingt kompliziert, und am Anfang ist es das auch.","That sounds complicated, and at the beginning it is."],
+ ["Nach einem halben Jahr macht man es jedoch automatisch.","After six months, however, you do it automatically."],
+ ["Und wenn man dann im Urlaub sieht, wie alles in eine einzige Tonne geworfen wird, tut es fast weh.","And when you then see on holiday how everything gets thrown into a single bin, it almost hurts."]
+]},
+
+{lv:4,cat:"kultur",title:"Die deutsche Höflichkeit",note:"Nominalisation · weniger… als · relative clauses · register",
+ tip:"<b>Written German loves nouns.</b> Where English says “because people understand directness differently”, German reaches for <code>an einem anderen Verständnis von Direktheit</code>. This nominal style is why newspaper German feels dense — and learning to <em>unpack</em> it back into verbs is the core B2 reading skill. Try rewriting sentence 2 with a <code>weil</code> clause and watch the register drop.",
+ s:[
+ ["Wer zum ersten Mal nach Deutschland kommt, hält die Deutschen oft für unhöflich.","Anyone coming to Germany for the first time often takes Germans to be impolite."],
+ ["Das liegt weniger an schlechten Manieren als an einem anderen Verständnis von Direktheit.","That is due less to bad manners than to a different understanding of directness."],
+ ["Während man im Englischen einen Wunsch gern in drei Konjunktive verpackt, sagt man hier schlicht, was man möchte.","Whereas in English one likes to wrap a request in three subjunctives, here one simply says what one wants."],
+ ["„Können Sie mir bitte helfen?“ gilt bereits als ausgesprochen freundlich.","“Could you please help me?” already counts as extremely friendly."],
+ ["Umgekehrt wird übertriebene Freundlichkeit schnell als unehrlich empfunden.","Conversely, exaggerated friendliness is quickly perceived as insincere."],
+ ["Ein deutscher Kollege, der sagt, ein Vorschlag sei „schwierig“, meint damit meistens: nein.","A German colleague who says a proposal is “difficult” usually means: no."],
+ ["Hat man sich einmal daran gewöhnt, empfindet man diese Klarheit als angenehm.","Once you have got used to it, you come to find this clarity pleasant."],
+ ["Man weiß, woran man ist – und das ist, richtig verstanden, eine Form von Respekt.","You know where you stand – and that, properly understood, is a form of respect."]
+]},
+
+{lv:4,cat:"kultur",title:"Feierabend",note:"Untranslatable words · sich lassen · defining a concept",
+ tip:"<b><code>sich lassen</code> = “can be”.</b> <code>Wörter, die sich nur schwer übersetzen lassen</code> means “words that are hard to translate”. It's a compact alternative to the passive with <em>können</em>, and once you spot the pattern you'll find it everywhere in written German: <code>das lässt sich machen</code> — that can be done.",
+ s:[
+ ["Es gibt deutsche Wörter, die sich nur schwer übersetzen lassen, und „Feierabend“ gehört zu den schönsten.","There are German words that are hard to translate, and “Feierabend” is one of the loveliest."],
+ ["Wörtlich bedeutet es „Feier-Abend“, also der Abend, an dem gefeiert wird.","Literally it means “celebration evening”, that is, the evening on which one celebrates."],
+ ["Gemeint ist aber schlicht der Moment, in dem die Arbeit endet.","What is meant, though, is simply the moment at which work ends."],
+ ["Man sagt nicht „Ich gehe nach Hause“, sondern „Ich mache Feierabend“.","You don't say “I'm going home”, but “I'm making Feierabend”."],
+ ["Der Unterschied ist entscheidend: Es ist kein Ortswechsel, sondern eine Entscheidung.","The difference is decisive: it isn't a change of location, but a decision."],
+ ["Wer Feierabend gemacht hat, ist nicht mehr erreichbar, und das gilt als vollkommen normal.","Whoever has made Feierabend is no longer reachable, and that counts as entirely normal."],
+ ["In Ländern, in denen abends um zehn noch E-Mails beantwortet werden, wirkt das fast radikal.","In countries where emails are still being answered at ten in the evening, that seems almost radical."],
+ ["Dabei steckt dahinter nur eine simple Überzeugung: Arbeit ist ein Teil des Lebens, nicht sein Zweck.","And yet behind it lies only a simple conviction: work is a part of life, not its purpose."]
+]},
+
+{lv:5,cat:"kultur",title:"Ost und West",note:"Extended attributes · passive · historical register",
+ tip:"<b>The extended attribute.</b> German can stack a whole clause <em>in front of</em> a noun where English must put it after: <code>die in den Statistiken zuverlässig auftauchende Grenze</code>. Sentence 4 works this way. When a sentence stalls, find the article, then jump forward to its noun, then read the middle — that's the decoding order.",
+ s:[
+ ["Mehr als drei Jahrzehnte nach der Wiedervereinigung ist die Grenze auf keiner Landkarte mehr zu finden.","More than three decades after reunification, the border is no longer to be found on any map."],
+ ["In den Statistiken taucht sie dennoch zuverlässig auf.","In the statistics it nevertheless shows up reliably."],
+ ["Löhne, Vermögen, Wahlergebnisse und die Zahl der Ostdeutschen in Führungspositionen zeichnen sie Jahr für Jahr nach.","Wages, wealth, election results and the number of East Germans in leadership positions trace it year after year."],
+ ["Wer in Leipzig oder Rostock aufgewachsen ist, kennt die Erfahrung, dass die eigene Biografie erklärungsbedürftig ist.","Anyone who grew up in Leipzig or Rostock knows the experience of one's own biography requiring explanation."],
+ ["Umgekehrt hat der Westen lange geglaubt, die Einheit sei im Wesentlichen ein Verwaltungsakt gewesen.","Conversely, the West long believed that unity had been essentially an administrative act."],
+ ["Dass sie für Millionen Menschen den Verlust von Arbeit, Betrieb und Selbstverständlichkeit bedeutete, wurde erst spät ernsthaft diskutiert.","That for millions of people it meant the loss of work, workplace and of things taken for granted was only seriously discussed late on."],
+ ["Inzwischen ist eine Generation erwachsen, die die DDR nur aus Erzählungen kennt.","By now a generation has grown up that knows the GDR only from stories."],
+ ["Ob sie die Trennung erbt oder beendet, ist eine der offenen Fragen dieses Landes.","Whether it will inherit the division or end it is one of this country's open questions."]
+]},
+
+/* ---------------- GESCHICHTEN ---------------- */
+{lv:2,cat:"story",title:"Der verlorene Schlüssel",note:"Narrative perfect · prepositions of place · word order",
+ tip:"<b>Time – Manner – Place.</b> When several adverbials pile up, German orders them <em>when</em>, then <em>how</em>, then <em>where</em>: <code>Ich bin gestern schnell nach Hause gegangen.</code> English does roughly the reverse. If a sentence you've built sounds subtly wrong to a native, this is very often why.",
+ s:[
+ ["Gestern Abend stand ich vor meiner Tür und suchte meinen Schlüssel.","Yesterday evening I stood in front of my door and looked for my key."],
+ ["Er war nicht in der Jackentasche und auch nicht im Rucksack.","It wasn't in my jacket pocket, and not in my rucksack either."],
+ ["Ich habe alles auf den Boden gelegt und noch einmal gesucht.","I put everything on the floor and looked again."],
+ ["Meine Nachbarin kam die Treppe hoch und hat gefragt, ob sie helfen kann.","My neighbour came up the stairs and asked whether she could help."],
+ ["Wir haben zusammen im Treppenhaus und vor dem Haus gesucht.","Together we searched the stairwell and the area in front of the building."],
+ ["Nach zwanzig Minuten hat sie plötzlich gelacht und auf meine Tür gezeigt.","After twenty minutes she suddenly laughed and pointed at my door."],
+ ["Der Schlüssel steckte die ganze Zeit von außen im Schloss.","The key had been in the lock from the outside the whole time."],
+ ["Ich hatte ihn beim Rausgehen einfach vergessen.","I had simply forgotten it on my way out."],
+ ["Seitdem grüßt sie mich jeden Morgen besonders freundlich.","Since then she greets me particularly warmly every morning."]
+]},
+
+{lv:3,cat:"story",title:"Die Frau im Zug",note:"Simple past in narrative · als · reported speech with Konjunktiv I",
+ tip:"<b>Two past tenses, two jobs.</b> Speech uses the perfect (<code>ich habe gesagt</code>); written narrative prefers the simple past (<code>sie sagte</code>, <code>ich wusste</code>, <code>sie stand auf</code>). Notice this text mixes them — that's normal and natural. You need to <em>recognise</em> the simple past long before you need to produce it.",
+ s:[
+ ["Der Zug nach München hatte fünfzig Minuten Verspätung, und ich hatte meinen Platz verloren.","The train to Munich was fifty minutes late, and I had lost my seat."],
+ ["Also setzte ich mich auf den Boden neben die Tür, zwischen zwei Koffer.","So I sat down on the floor next to the door, between two suitcases."],
+ ["Mir gegenüber saß eine ältere Frau, die ihr Buch zuklappte und mich ansah.","Opposite me sat an older woman, who closed her book and looked at me."],
+ ["„Sie sehen aus, als hätten Sie einen langen Tag hinter sich“, sagte sie.","“You look as though you've had a long day,” she said."],
+ ["Wir haben zwei Stunden lang geredet, über ihre Enkel, über meine Arbeit und über das Reisen.","We talked for two hours, about her grandchildren, about my work and about travelling."],
+ ["Als der Zug in München ankam, wusste ich nicht einmal ihren Namen.","When the train arrived in Munich, I didn't even know her name."],
+ ["Sie stand auf, gab mir ihr Buch und sagte, sie habe es schon zweimal gelesen.","She stood up, gave me her book and said she had already read it twice."],
+ ["Dann verschwand sie in der Menge auf dem Bahnsteig.","Then she disappeared into the crowd on the platform."],
+ ["Das Buch steht immer noch in meinem Regal, und ich habe es nie aufgeschlagen.","The book is still on my shelf, and I have never opened it."]
+]},
+
+{lv:4,cat:"story",title:"Das Haus am Waldrand",note:"Literary simple past · inversion · Konjunktiv I for hearsay",
+ tip:"<b>Konjunktiv I marks reported speech.</b> <code>Er sagte, er <u>sei</u> in diesem Haus geboren worden</code> — the <em>sei</em> quietly signals “so he claims; I'm not vouching for it”. German journalism runs on this. English has no equivalent and has to add “allegedly” or “reportedly”, which is why translations of German reporting always sound heavier than the original.",
+ s:[
+ ["Das Haus stand seit Jahren leer, und niemand im Dorf konnte genau sagen, wem es gehörte.","The house had stood empty for years, and nobody in the village could say exactly who owned it."],
+ ["Im Sommer wuchs das Gras bis an die Fensterbänke, im Winter lag der Schnee unberührt vor der Tür.","In summer the grass grew up to the window sills; in winter the snow lay untouched in front of the door."],
+ ["Kinder behaupteten, abends brenne dort Licht, aber Kinder behaupten vieles.","Children claimed that a light burned there in the evenings, but children claim a lot of things."],
+ ["Als im Oktober ein Umzugswagen den Feldweg hinauffuhr, standen innerhalb einer Stunde alle Nachbarn am Zaun.","When a removal van drove up the dirt track in October, all the neighbours were standing at the fence within an hour."],
+ ["Heraus stieg ein Mann von vielleicht sechzig Jahren, der niemanden grüßte und sofort begann, die Fensterläden zu öffnen.","Out climbed a man of perhaps sixty, who greeted nobody and immediately began to open the shutters."],
+ ["Erst am dritten Tag sprach er mit jemandem, und zwar mit der Bäckerin.","Only on the third day did he speak to anyone, namely to the baker."],
+ ["Er sagte, er sei in diesem Haus geboren worden und habe es vierzig Jahre lang nicht betreten.","He said he had been born in this house and had not set foot in it for forty years."],
+ ["Mehr erzählte er nicht, und im Dorf fragte ihn niemand.","He said no more, and in the village nobody asked him."],
+ ["Aber seitdem brennt abends tatsächlich Licht.","But since then a light really does burn there in the evenings."]
+]},
+
+{lv:5,cat:"story",title:"Der letzte Gast",note:"Long periodic sentences · nested clauses · literary irony",
+ tip:"<b>Read for the frame first.</b> Sentence 7 runs to forty words and holds its point until the last four. Locate <code>fiel … auf</code> (the main verb, a separable one, split across the whole sentence) and everything between the halves is detail hanging off it. German lets you defer the payload; English rarely does. This is the skill that makes literature readable.",
+ s:[
+ ["Gegen zwei Uhr nachts war von der Feier nur noch jenes Stadium übrig, in dem die Musik längst leiser ist als die Gespräche.","By around two in the morning, all that was left of the party was that stage in which the music has long been quieter than the conversation."],
+ ["Die Gastgeberin hatte begonnen, Gläser einzusammeln – jene höfliche Form der Vertreibung, die niemand offen anspricht.","The hostess had begun to collect glasses – that polite form of eviction which nobody openly names."],
+ ["Nur ein Gast blieb sitzen, in einem Sessel, den er den ganzen Abend nicht verlassen hatte.","Only one guest remained seated, in an armchair he had not left all evening."],
+ ["Niemand konnte sich erinnern, ihn eingeladen zu haben, was für sich genommen nichts bedeuten musste.","Nobody could remember having invited him, which taken on its own needn't have meant anything."],
+ ["Er trank nichts, sprach wenig und beantwortete Fragen mit einer Freundlichkeit, die keine Auskunft enthielt.","He drank nothing, spoke little, and answered questions with a friendliness that contained no information."],
+ ["Als die Letzten gegangen waren, stand er auf, bedankte sich für einen sehr angenehmen Abend und ging.","When the last people had left, he stood up, thanked her for a very pleasant evening and went."],
+ ["Erst am nächsten Morgen fiel der Gastgeberin auf, dass in dem Sessel ein Buch lag, das ihr gehörte und das sie seit zwanzig Jahren verloren glaubte.","Only the next morning did the hostess notice that in the armchair lay a book which belonged to her and which she had believed lost for twenty years."]
+]},
+
+/* ---------------- WISSEN ---------------- */
+{lv:2,cat:"wissen",title:"Warum wir gähnen",note:"Simple explanatory prose · weil · comparatives",
+ tip:"<b><code>weil</code> sends the verb to the end; <code>denn</code> doesn't.</b> <code>…, weil wir müde <u>sind</u></code> but <code>…, denn wir <u>sind</u> müde</code>. They mean the same thing. If end-position verbs are still slowing you down, <code>denn</code> is a perfectly respectable way to buy yourself time in speech.",
+ s:[
+ ["Alle Menschen gähnen, und viele Tiere machen es auch.","All humans yawn, and many animals do it too."],
+ ["Aber warum? Das weiß die Wissenschaft nicht genau.","But why? Science doesn't know exactly."],
+ ["Früher haben viele Leute gedacht: Wir gähnen, weil wir zu wenig Sauerstoff haben.","In the past many people thought: we yawn because we have too little oxygen."],
+ ["Heute glauben Forscher das nicht mehr.","Today researchers no longer believe that."],
+ ["Eine neuere Idee ist: Gähnen kühlt das Gehirn.","A more recent idea is: yawning cools the brain."],
+ ["Interessant ist auch, dass Gähnen ansteckend ist.","Something else that is interesting is that yawning is contagious."],
+ ["Wenn eine Person gähnt, gähnen die anderen oft auch.","When one person yawns, the others often yawn too."],
+ ["Vielleicht gähnst du gerade jetzt.","Maybe you're yawning right now."]
+]},
+
+{lv:3,cat:"wissen",title:"Warum Kaffee wach macht",note:"Scientific explanation · je … desto · impersonal constructions",
+ tip:"<b><code>je … desto</code> = “the … the”.</b> <code>Je länger wir wach sind, desto mehr sammelt sich an.</code> Note the split: the <em>je</em> half is a subclause with the verb at the end, the <em>desto</em> half puts its verb straight after <em>desto</em> + comparative. Awkward the first ten times, automatic thereafter.",
+ s:[
+ ["Fast jeder trinkt morgens Kaffee, aber die wenigsten wissen, wie er eigentlich wirkt.","Almost everyone drinks coffee in the morning, but very few know how it actually works."],
+ ["Kaffee gibt dem Körper keine Energie, denn er enthält kaum Kalorien.","Coffee doesn't give the body energy, because it contains hardly any calories."],
+ ["Er blockiert stattdessen einen Stoff im Gehirn, der uns müde macht.","Instead it blocks a substance in the brain that makes us tired."],
+ ["Dieser Stoff heißt Adenosin, und je länger wir wach sind, desto mehr sammelt sich davon an.","This substance is called adenosine, and the longer we are awake, the more of it builds up."],
+ ["Koffein hat eine ähnliche Form und setzt sich an dieselben Stellen.","Caffeine has a similar shape and attaches itself to the same places."],
+ ["Das Gehirn merkt dadurch nicht mehr, wie müde es eigentlich ist.","As a result the brain no longer notices how tired it actually is."],
+ ["Die Müdigkeit verschwindet also nicht, sie wartet nur.","So the tiredness doesn't disappear, it merely waits."],
+ ["Wenn das Koffein abgebaut ist, kommt sie auf einmal zurück.","When the caffeine has been broken down, it comes back all at once."],
+ ["Deshalb fühlt man sich am Nachmittag oft schlechter als vorher.","That's why you often feel worse in the afternoon than you did before."]
+]},
+
+{lv:4,cat:"wissen",title:"Warum das Deutsche so lange Wörter hat",note:"Meta-language · compound nouns · comparison of languages",
+ tip:"<b>The last element rules.</b> In any German compound, the final noun decides both the meaning and the gender: <code>die Handschuhschachtel</code> is a <em>Schachtel</em> (box), so it's <em>die</em> — regardless of the <em>der Handschuh</em> at the front. This one rule turns the famous monster words from vocabulary into arithmetic.",
+ s:[
+ ["Kaum ein Merkmal des Deutschen wird so oft belächelt wie seine langen Wörter.","Hardly any feature of German is mocked as often as its long words."],
+ ["Tatsächlich handelt es sich dabei nicht um Wörter im eigentlichen Sinn, sondern um zusammengeschriebene Wortgruppen.","In fact these are not words in the strict sense, but word groups written together."],
+ ["Das Englische bildet dieselben Begriffe, setzt jedoch Leerzeichen dazwischen: „speed limit“ gegen „Geschwindigkeitsbegrenzung“.","English forms the same concepts, but puts spaces between them: “speed limit” versus “Geschwindigkeitsbegrenzung”."],
+ ["Der Unterschied ist also weniger sprachlicher als typografischer Natur.","The difference is therefore less linguistic than typographic in nature."],
+ ["Für Lernende hat das einen erheblichen Vorteil, sobald der erste Schreck vorbei ist.","For learners this has a considerable advantage, once the initial shock has passed."],
+ ["Man muss solche Wörter nämlich nicht auswendig lernen, sondern nur zerlegen.","For you don't have to learn such words by heart, only take them apart."],
+ ["Das letzte Element bestimmt dabei Bedeutung und Geschlecht: eine Handschuhschachtel ist eine Schachtel, kein Handschuh.","The final element determines meaning and gender: a glove box is a box, not a glove."],
+ ["Wer das einmal begriffen hat, liest die berüchtigten Bandwurmwörter mit einer gewissen Befriedigung.","Once you have grasped that, you read the notorious tapeworm words with a certain satisfaction."]
+]},
+
+{lv:4,cat:"wissen",title:"Die Erfindung des Buchdrucks",note:"Historical narrative · passive · subjunctive II in hypotheticals",
+ tip:"<b>The passive, built with <code>werden</code>.</b> <code>Texte wurden gedruckt</code> = texts were printed. Not <em>sein</em> — <code>Texte sind gedruckt</code> describes a finished state, not an action. German uses the passive far more freely than English, especially in history and science writing, so learning to read it quickly pays off immediately.",
+ s:[
+ ["Als Johannes Gutenberg um 1450 in Mainz seine Werkstatt einrichtete, war die Idee des Druckens nicht neu.","When Johannes Gutenberg set up his workshop in Mainz around 1450, the idea of printing was not new."],
+ ["In China wurden bereits seit Jahrhunderten Texte von geschnitzten Holzplatten gedruckt.","In China texts had already been printed from carved wooden blocks for centuries."],
+ ["Gutenbergs Neuerung bestand darin, einzelne Buchstaben aus Metall zu gießen und beliebig neu zu kombinieren.","Gutenberg's innovation consisted in casting individual letters from metal and recombining them at will."],
+ ["Damit ließ sich eine Seite in Stunden setzen, statt sie in Wochen zu schnitzen.","This meant a page could be typeset in hours instead of being carved over weeks."],
+ ["Die Folgen waren größer, als er ahnen konnte – wirtschaftlich gesehen ruinierten sie ihn.","The consequences were greater than he could have guessed – economically speaking, they ruined him."],
+ ["Innerhalb von fünfzig Jahren entstanden in Europa Millionen gedruckter Bücher.","Within fifty years millions of printed books appeared in Europe."],
+ ["Ohne sie wäre weder die Reformation noch die Verbreitung einer einheitlichen deutschen Schriftsprache denkbar gewesen.","Without them neither the Reformation nor the spread of a unified German written language would have been conceivable."],
+ ["Luthers Bibelübersetzung wurde zum Bestseller – und nebenbei zu einer Grundlage des Deutschen, das Sie gerade lesen.","Luther's Bible translation became a bestseller – and incidentally one foundation of the German you are reading right now."]
+]},
+
+/* ---------------- MEINUNG ---------------- */
+{lv:3,cat:"essay",title:"Warum ich Deutsch lerne",note:"Subordinate clauses · dass / weil / als · reflexive verbs",
  tip:"<b>The verb goes to the end — but only in subclauses.</b> After <code>dass</code>, <code>weil</code>, <code>als</code>, <code>wenn</code> or <code>obwohl</code>, the conjugated verb drops to the final position: <code>…dass die Sprache eine Frage der Geduld <u>ist</u></code>. English speakers resist this for months. Read sentences 1, 2 and 5 aloud until the shape feels normal rather than backwards.",
  s:[
  ["Als ich angefangen habe, Deutsch zu lernen, dachte ich, es wäre nur eine Frage von Vokabeln.","When I started learning German, I thought it was just a question of vocabulary."],
@@ -410,19 +775,21 @@ const TEXTS = [
  ["Am Anfang habe ich fast nichts verstanden, nach einem halben Jahr ungefähr die Hälfte.","At the beginning I understood almost nothing; after six months, roughly half."],
  ["Man merkt den Fortschritt nicht jeden Tag, aber er ist da.","You don't notice the progress every day, but it is there."]
 ]},
-{lv:4,title:"Die deutsche Höflichkeit",note:"Nominalisation · weniger… als · relative clauses · register",
- tip:"<b>Written German loves nouns.</b> Where English says “because people understand directness differently”, German reaches for <code>an einem anderen Verständnis von Direktheit</code>. This nominal style is why newspaper German feels dense — and learning to <em>unpack</em> it back into verbs is the core B2 reading skill. Try rewriting sentence 2 with a <code>weil</code> clause and see how the register drops.",
+
+{lv:4,cat:"essay",title:"Brauchen wir noch Bargeld?",note:"Argumentation · concession · abstract nouns",
+ tip:"<b>Signposting words carry the argument.</b> <code>Auf der anderen Seite</code>, <code>vermutlich</code>, <code>es geht nicht darum … sondern</code>, <code>solange</code> — these tell you the shape of the reasoning before you've parsed the content. Learn twenty of them and dense opinion writing becomes navigable even where individual words don't.",
  s:[
- ["Wer zum ersten Mal nach Deutschland kommt, hält die Deutschen oft für unhöflich.","Anyone coming to Germany for the first time often takes Germans to be impolite."],
- ["Das liegt weniger an schlechten Manieren als an einem anderen Verständnis von Direktheit.","That is due less to bad manners than to a different understanding of directness."],
- ["Während man im Englischen einen Wunsch gern in drei Konjunktive verpackt, sagt man hier schlicht, was man möchte.","Whereas in English one likes to wrap a request in three subjunctives, here one simply says what one wants."],
- ["„Können Sie mir bitte helfen?“ gilt bereits als ausgesprochen freundlich.","“Could you please help me?” already counts as extremely friendly."],
- ["Umgekehrt wird übertriebene Freundlichkeit schnell als unehrlich empfunden.","Conversely, exaggerated friendliness is quickly perceived as insincere."],
- ["Ein deutscher Kollege, der sagt, ein Vorschlag sei „schwierig“, meint damit meistens: nein.","A German colleague who says a proposal is “difficult” usually means: no."],
- ["Hat man sich einmal daran gewöhnt, empfindet man diese Klarheit als angenehm.","Once you have got used to it, you come to find this clarity pleasant."],
- ["Man weiß, woran man ist – und das ist, richtig verstanden, eine Form von Respekt.","You know where you stand – and that, properly understood, is a form of respect."]
+ ["In kaum einem anderen westlichen Land wird so hartnäckig mit Bargeld bezahlt wie in Deutschland.","In hardly any other Western country do people pay with cash as stubbornly as in Germany."],
+ ["Wer in Schweden einen Kaffee bar bezahlen will, erntet verwunderte Blicke; in Bayern gilt eher das Umgekehrte.","Anyone wanting to pay cash for a coffee in Sweden earns puzzled looks; in Bavaria rather the opposite applies."],
+ ["Verteidiger des Bargelds führen meist den Datenschutz an, und das Argument ist besser, als es klingt.","Defenders of cash usually cite data protection, and the argument is better than it sounds."],
+ ["Jede Kartenzahlung hinterlässt eine Spur, die jemandem gehört, und dieser Jemand ist selten man selbst.","Every card payment leaves a trace that belongs to someone, and that someone is rarely oneself."],
+ ["Auf der anderen Seite ist Bargeld teuer, langsam und keineswegs für alle bequemer als eine Karte.","On the other hand cash is expensive, slow, and by no means more convenient for everyone than a card."],
+ ["Vermutlich läuft die Debatte deshalb an der eigentlichen Frage vorbei.","Presumably that is why the debate misses the actual question."],
+ ["Es geht nicht darum, ob wir Münzen brauchen, sondern ob wir eine Zahlungsform brauchen, die niemand beobachtet.","It is not about whether we need coins, but whether we need a form of payment that nobody observes."],
+ ["Solange darauf keine überzeugende digitale Antwort existiert, wird der Schein in der Tasche bleiben.","As long as no convincing digital answer to that exists, the banknote will stay in the pocket."]
 ]},
-{lv:5,title:"Über das Übersetzen",note:"Essayistic register · extended attributes · subjunctive · irony",
+
+{lv:5,cat:"essay",title:"Über das Übersetzen",note:"Essayistic register · extended attributes · subjunctive · irony",
  tip:"<b>This is what C1 actually looks like.</b> Long subjects, embedded clauses, a verb you have to wait four lines for, and a dry joke you only get if you followed the whole sentence. Don't decode word by word — find the main verb first, then hang everything else off it. If you can read sentence 2 once and understand it, you are past the hard part.",
  s:[
  ["Es gehört zu den zweifelhaften Trostgründen des Sprachenlernens, dass man irgendwann aufhört zu übersetzen.","It is one of the dubious consolations of language learning that at some point you stop translating."],
@@ -432,7 +799,21 @@ const TEXTS = [
  ["Man erinnert sich an ein Gespräch und weiß nicht mehr, in welcher Sprache es geführt wurde.","You remember a conversation and no longer know which language it was held in."],
  ["Von da an ist Deutsch keine Aufgabe mehr, sondern ein Ort, an dem man sich aufhalten kann.","From then on German is no longer a task, but a place you can dwell in."],
  ["Dass man dort zunächst wie ein Gast wohnt und erst allmählich wie ein Bewohner, versteht sich von selbst.","That one lives there like a guest at first and only gradually like a resident goes without saying."]
-]}];
+]},
+
+{lv:5,cat:"essay",title:"Gegen die Eile",note:"Cultural criticism · abstract argument · rhetorical structure",
+ tip:"<b>Notice how little vocabulary is actually hard here.</b> At C1 the difficulty shifts from words to <em>compression</em>: each sentence carries a full argumentative move, and the connective tissue between them is implied rather than stated. Try summarising this text in three German sentences — that exercise builds the muscle faster than any amount of extra reading.",
+ s:[
+ ["Es gehört zu den Eigentümlichkeiten unserer Zeit, dass wir Geschwindigkeit für einen Wert halten und nicht für ein Mittel.","It is one of the peculiarities of our age that we take speed to be a value and not a means."],
+ ["Ein Buch wird gelobt, weil es sich schnell liest; eine Antwort, weil sie schnell kam.","A book is praised because it reads quickly; an answer, because it came quickly."],
+ ["Worauf das hinausläuft, wird dabei selten gefragt, denn die Frage selbst kostet Zeit.","What it all amounts to is rarely asked, for the question itself costs time."],
+ ["Sprachenlernen ist gegen diese Logik bemerkenswert immun.","Language learning is remarkably immune to this logic."],
+ ["Man kann es beschleunigen wollen, aber das Gehirn verhandelt nicht.","You can want to speed it up, but the brain does not negotiate."],
+ ["Es braucht Wiederholung, Schlaf und eine gewisse Menge an Langeweile, und zwar in dieser Reihenfolge.","It needs repetition, sleep and a certain quantity of boredom – and in that order."],
+ ["Vielleicht liegt darin der eigentliche Gewinn: Wer eine Sprache lernt, übt sich unfreiwillig in Geduld.","Perhaps therein lies the real gain: whoever learns a language involuntarily practises patience."],
+ ["Und Geduld ist, anders als Vokabeln, auf alles übertragbar.","And patience, unlike vocabulary, is transferable to everything."]
+]}
+];
 
 /* ================= PLANS ================= */
 const PLANS = [
@@ -565,24 +946,93 @@ document.addEventListener("keydown",e=>{
 });
 
 /* ================= READER ================= */
-let curLv = store.get("readLv",1);
-function renderPicker(){
-  document.getElementById("lvpick").innerHTML = TEXTS.map(t=>
-    `<button class="chip lv" style="--lvc:${LV[t.lv].c}" data-t="${t.lv}" aria-pressed="${t.lv===curLv}">${LV[t.lv].e} ${LV[t.lv].n}</button>`).join("");
-  document.querySelectorAll("#lvpick .chip").forEach(b=>b.onclick=()=>{
-    curLv=+b.dataset.t; store.set("readLv",curLv); renderPicker(); renderText();
+let rCat = new Set(store.get("rCat",[]));
+let rLv  = new Set(store.get("rLv",[]));
+const browseEl = document.getElementById("browse");
+const readEl   = document.getElementById("readview");
+
+// indices of TEXTS matching the current filters, easiest first
+function visible(){
+  return TEXTS.map((t,i)=>i)
+    .filter(i=>{
+      const t=TEXTS[i];
+      if(rCat.size && !rCat.has(t.cat)) return false;
+      if(rLv.size  && !rLv.has(t.lv))   return false;
+      return true;
+    })
+    .sort((a,b)=> TEXTS[a].lv-TEXTS[b].lv || TEXTS[a].title.localeCompare(TEXTS[b].title,"de"));
+}
+
+function renderFilters(){
+  document.getElementById("rcats").innerHTML =
+    '<span class="lbl">Category</span>' + Object.entries(CATS).map(([k,c])=>
+      `<button class="chip rc" data-c="${k}" aria-pressed="${rCat.has(k)}">${c.e} ${c.de}<span style="opacity:.5"> · ${c.en}</span></button>`
+    ).join("");
+  document.getElementById("rlvs").innerHTML =
+    '<span class="lbl">Level</span>' + [1,2,3,4,5].map(l=>
+      `<button class="chip lv rl" data-l="${l}" style="--lvc:${LV[l].c}" aria-pressed="${rLv.has(l)}">${LV[l].e} ${LV[l].n}</button>`
+    ).join("") + '<span class="count" id="rcount"></span>';
+
+  document.querySelectorAll("#rcats .rc").forEach(b=>b.onclick=()=>{
+    const c=b.dataset.c; rCat.has(c)?rCat.delete(c):rCat.add(c);
+    store.set("rCat",[...rCat]); renderFilters(); renderList();
+  });
+  document.querySelectorAll("#rlvs .rl").forEach(b=>b.onclick=()=>{
+    const l=+b.dataset.l; rLv.has(l)?rLv.delete(l):rLv.add(l);
+    store.set("rLv",[...rLv]); renderFilters(); renderList();
   });
 }
-function renderText(){
-  const t = TEXTS.find(x=>x.lv===curLv);
-  document.getElementById("rmeta").textContent = `${LV[t.lv].n} · ${LV[t.lv].cefr} · ${t.s.length} sentences`;
+
+function renderList(){
+  const vis=visible();
+  document.getElementById("rcount").textContent = `${vis.length} of ${TEXTS.length} texts`;
+  const box=document.getElementById("textlist");
+  if(!vis.length){
+    box.innerHTML='<div class="empty" style="grid-column:1/-1">No texts match those filters.</div>';
+    return;
+  }
+  box.innerHTML = vis.map(i=>{
+    const t=TEXTS[i];
+    return `<article class="card tcard" data-i="${i}">
+      <div class="cat">${CATS[t.cat].e} ${CATS[t.cat].de}</div>
+      <h3>${t.title}</h3>
+      <p>${t.note}</p>
+      <div class="meta">
+        <span class="b lv" style="background:${LV[t.lv].c}">${LV[t.lv].e} ${LV[t.lv].n}</span>
+        <span class="b kind">${t.s.length} sentences</span>
+      </div></article>`;
+  }).join("");
+  box.querySelectorAll(".tcard").forEach(c=>c.onclick=()=>openText(+c.dataset.i));
+}
+
+// dialogues are written "A: …" — pull the speaker tag out for styling
+const spk = de => de.replace(/^([A-ZÄÖÜ]):\s/, '<span class="speaker">$1</span>');
+
+function openText(i){
+  const t=TEXTS[i];
+  browseEl.hidden=true; readEl.hidden=false;
   document.getElementById("textbox").innerHTML =
-    `<h2 class="title">${t.title}</h2><p class="note">${t.note} — tap any line for the English</p>` +
-    t.s.map(([de,en])=>`<div class="sent"><div class="de">${de}</div><div class="en">${en}</div></div>`).join("");
+    `<h2 class="title">${t.title}</h2>
+     <p class="note">${CATS[t.cat].e} ${CATS[t.cat].de} · ${LV[t.lv].n} (${LV[t.lv].cefr}) · ${t.note}<br>Tap any line for the English</p>`
+    + t.s.map(([de,en])=>`<div class="sent"><div class="de">${spk(de)}</div><div class="en">${en}</div></div>`).join("");
   document.getElementById("rtip").innerHTML = t.tip;
   document.querySelectorAll("#textbox .sent").forEach(s=>s.onclick=()=>s.classList.toggle("open"));
   document.getElementById("revealAll").textContent="Reveal all translations";
+
+  const vis=visible(), pos=vis.indexOf(i);
+  const prev=document.getElementById("prevBtn"), next=document.getElementById("nextBtn");
+  prev.disabled = pos<=0;
+  next.disabled = pos<0 || pos>=vis.length-1;
+  prev.onclick = ()=>openText(vis[pos-1]);
+  next.onclick = ()=>openText(vis[pos+1]);
+  document.getElementById("rmeta").textContent = pos>=0 ? `${pos+1} / ${vis.length}` : "";
+  window.scrollTo({top:0,behavior:"instant"});
 }
+
+document.getElementById("backBtn").onclick=()=>{
+  readEl.hidden=true; browseEl.hidden=false;
+  window.scrollTo({top:0,behavior:"instant"});
+};
 document.getElementById("revealAll").onclick=function(){
   const all=[...document.querySelectorAll("#textbox .sent")];
   const open=all.every(s=>s.classList.contains("open"));
@@ -613,7 +1063,7 @@ themeBtn.onclick=()=>{
   document.documentElement.dataset.theme=n; store.set("theme",n);
 };
 
-syncChips(); render(); renderPicker(); renderText();
+syncChips(); render(); renderFilters(); renderList();
 </script>
 </body>
 </html>
