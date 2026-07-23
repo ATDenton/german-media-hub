@@ -22,7 +22,7 @@ No build step, no dependencies, no tracking. It's one `index.html` file. Open it
 
 Also filterable by type (📖 Read / 📺 Watch / 🎧 Listen / 🛠 Tools), by free-vs-paid, and by whether the material is genuinely downloadable for offline use. Press <kbd>/</kbd> to jump to the search box.
 
-**Parallel Reader** — **30 original German texts, 256 sentence pairs**, from *"Ich heiße Lena"* up to a C1 essay on translation. Tap any sentence to reveal the English. Every text carries a grammar note explaining the one thing it's really teaching, and you can page through texts with Previous / Next.
+**Parallel Reader** — **41 texts, 334 sentence pairs**, from *"Ich heiße Lena"* up to a C1 essay on translation. Tap any sentence to reveal the English. Every text carries a grammar note explaining the one thing it's really teaching, and you can page through texts with Previous / Next.
 
 Filter by level and by category:
 
@@ -34,6 +34,14 @@ Filter by level and by category:
 | 📗 **Geschichten** | Stories | Original short fiction — a lost key, a stranger on a train, an empty house |
 | 🔬 **Wissen** | Explainers | Why we yawn, how caffeine works, why German words are long, Gutenberg |
 | ✍️ **Meinung** | Opinion | Essays on learning German, cash vs. cards, translation, and hurry |
+
+Plus three categories of **authentic German written by Germans**, imported from openly-licensed sources with attribution ([full details](ATTRIBUTION.md)):
+
+| Category | | Source | Licence |
+|---|---|---|---|
+| 📚 **Klexikon** | A2–B1 | Germany's children's encyclopedia | CC BY-SA 4.0 |
+| 📰 **Nachrichten** | B1–B2 | German Wikinews | CC BY 2.5 |
+| 🎭 **Klassiker** | B2 | Grimm fairy tales, 1857 originals | Public domain |
 
 **Daily Plan** — a 30–45 minute routine for each level, pointing at specific resources in the library.
 
@@ -89,8 +97,8 @@ Starred items, filters, chosen theme and reader level are stored in `localStorag
 
 ## Notes
 
-Nothing copyrighted is bundled into this repo — it links out rather than mirroring, so it won't rot the way a scraped archive would. **All 30 reader texts are original writing**, not excerpts from books or websites. That's deliberate: it keeps the repo clean of other people's material, and it means the vocabulary and grammar can be graded to hit one target per text, which scraped prose can't do.
+Nothing copyrighted is bundled into this repo — it links out rather than mirroring, so it won't rot the way a scraped archive would. 30 of the 41 reader texts are **original writing**, graded so each one drills a single target. The other 11 are **authentic German** imported only from sources that permit it — Klexikon (CC BY-SA), Wikinews (CC BY) and public-domain Grimm — each carrying attribution in the app and in [ATTRIBUTION.md](ATTRIBUTION.md).
 
-For real German literature, the library links to Project Gutenberg and LibriVox, where the public-domain canon lives in full.
+No contemporary copyrighted material is copied here. For full-length German literature, the Library links to Project Gutenberg and LibriVox, where the public-domain canon lives in full and is legitimately downloadable.
 
 Some ARD/ZDF *video* is geo-restricted to German IP addresses. Their news and children's programming generally isn't — which happens to be exactly what a learner wants anyway.

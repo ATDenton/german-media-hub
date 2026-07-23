@@ -128,6 +128,8 @@
   .tcard{cursor:pointer}
   .tcard h3{padding-right:0}
   .tcard .cat{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);font-weight:600}
+  .attrib{font-size:12px;color:var(--fg3);margin:14px 2px 0;line-height:1.5}
+  .attrib a{color:var(--fg2)}
   .readnav{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap}
   .readnav .themebtn[disabled]{opacity:.35;cursor:default}
   .speaker{font-family:var(--mono);font-size:12px;color:var(--acc);margin-right:7px;font-weight:600}
@@ -246,6 +248,7 @@
       </div>
       <div class="text" id="textbox"></div>
       <div class="tip" id="rtip"></div>
+      <p class="attrib" id="rattr"></p>
       <div class="readnav">
         <button class="themebtn" id="prevBtn">← Previous</button>
         <span class="src" id="rmeta"></span>
@@ -397,7 +400,11 @@ const CATS = {
   kultur:{de:"Land & Leute", en:"Culture",       e:"🏛"},
   story: {de:"Geschichten",  en:"Stories",       e:"📗"},
   wissen:{de:"Wissen",       en:"Explainers",    e:"🔬"},
-  essay: {de:"Meinung",      en:"Opinion",       e:"✍️"}
+  essay: {de:"Meinung",      en:"Opinion",       e:"✍️"},
+  // imported, openly-licensed sources — see ATTRIBUTION.md
+  klexikon:   {de:"Klexikon",    en:"Kids' encyclopedia", e:"📚"},
+  klassiker:  {de:"Klassiker",   en:"Public domain",      e:"🎭"},
+  nachrichten:{de:"Nachrichten", en:"Real news",          e:"📰"}
 };
 
 const TEXTS = [
@@ -812,6 +819,154 @@ const TEXTS = [
  ["Es braucht Wiederholung, Schlaf und eine gewisse Menge an Langeweile, und zwar in dieser Reihenfolge.","It needs repetition, sleep and a certain quantity of boredom – and in that order."],
  ["Vielleicht liegt darin der eigentliche Gewinn: Wer eine Sprache lernt, übt sich unfreiwillig in Geduld.","Perhaps therein lies the real gain: whoever learns a language involuntarily practises patience."],
  ["Und Geduld ist, anders als Vokabeln, auf alles übertragbar.","And patience, unlike vocabulary, is transferable to everything."]
+]},
+/* ---------------- KLEXIKON (CC BY-SA 4.0) ---------------- */
+{lv:2,cat:"klexikon",title:"Der Regenbogen",note:"wenn-clauses · plural verbs · natural science vocabulary",
+ src:"Klexikon: Regenbogen",url:"https://klexikon.zum.de/wiki/Regenbogen",lic:"CC BY-SA 4.0",
+ tip:"<b>Your first authentic text.</b> Nothing here was written for a learner — this is a real encyclopedia entry aimed at German children. Notice how <code>wenn</code> pushes its verb to the end (<code>wenn es regnet</code>) and the main clause then starts with its own verb: <code>Dies kommt vor, wenn…</code>. Same rule you met in the graded texts, now in the wild.",
+ s:[
+ ["Ein Regenbogen bildet sich, wenn Lichtstrahlen auf Wassertropfen treffen.","A rainbow forms when rays of light strike droplets of water."],
+ ["Dies kommt vor, wenn es regnet und gleichzeitig die Sonne scheint.","This happens when it rains and the sun shines at the same time."],
+ ["Wenn wir den Regenbogen sehen, muss die Sonne hinter uns sein.","When we see the rainbow, the sun must be behind us."],
+ ["Der Regenbogen ist eine natürliche Erscheinung.","The rainbow is a natural phenomenon."],
+ ["Die Sonnenstrahlen enthalten viele verschiedene Farben.","The sun's rays contain many different colours."],
+ ["Alle zusammen erscheinen uns weiß.","All of them together appear white to us."],
+ ["In den Wassertröpfchen werden diese Farben aber aufgefächert.","In the water droplets, however, these colours are fanned out."]
+]},
+
+{lv:2,cat:"klexikon",title:"Der Roboter",note:"Passive with werden · modal verbs · word origins",
+ src:"Klexikon: Roboter",url:"https://klexikon.zum.de/wiki/Roboter",lic:"CC BY-SA 4.0",
+ tip:"<b>The passive, spotted in the wild.</b> <code>eine Maschine, die programmiert werden kann</code> — “a machine that can be programmed”. German builds the passive with <em>werden</em> plus a past participle, and here it's stacked inside a modal (<em>kann</em>) inside a relative clause. Three structures in six words; unpick it slowly and the pattern sticks.",
+ s:[
+ ["Ein Roboter ist eine Maschine, die programmiert werden kann und meistens vor allem Bewegungen ausführt.","A robot is a machine that can be programmed and mostly, above all, carries out movements."],
+ ["Das Wort kommt aus der tschechischen Sprache und bedeutet so etwas wie „Sklave“.","The word comes from Czech and means something like “slave”."],
+ ["Er muss immer Befehlen folgen und darf nichts selbst bestimmen.","It must always follow orders and may decide nothing for itself."],
+ ["Ein Roboter ist so ähnlich wie ein Automat, nur dass viele Roboter von Ort zu Ort gehen können.","A robot is much like an automaton, except that many robots can move from place to place."],
+ ["Außerdem können sie schwierige Dinge tun, manche können sogar ähnlich wie Menschen arbeiten.","They can also do difficult things; some can even work in ways similar to humans."],
+ ["Roboter haben auch eine Art Augen und Ohren.","Robots also have a kind of eyes and ears."],
+ ["Damit können sie erkennen, was in ihrer Umwelt ist.","With these they can recognise what is in their environment."],
+ ["Mit Sensoren können sie zum Beispiel Farben erkennen oder Temperaturen messen.","With sensors they can, for example, recognise colours or measure temperatures."]
+]},
+
+{lv:2,cat:"klexikon",title:"Der Vulkan",note:"so … dass · relative clauses with bei denen · geography",
+ src:"Klexikon: Vulkan",url:"https://klexikon.zum.de/wiki/Vulkan",lic:"CC BY-SA 4.0",
+ tip:"<b><code>so … dass</code> = “so … that”.</b> <code>Das Gestein ist so heiß, dass es geschmolzen ist.</code> The <em>dass</em> clause sends its verb to the end, as always. This pairing is everywhere in explanatory writing, and it's one of the cheapest ways to make your own German sound less like a list of short sentences.",
+ s:[
+ ["Ein Vulkan ist ein Berg.","A volcano is a mountain."],
+ ["Aus ihm kommt Gestein aus dem Inneren der Erde an die Oberfläche.","Out of it, rock from the interior of the earth comes to the surface."],
+ ["Das Gestein ist so heiß, dass es geschmolzen ist.","The rock is so hot that it has melted."],
+ ["Der Name „Vulkan“ kommt von dem römischen Gott des Feuers, Vulcanus.","The name “volcano” comes from the Roman god of fire, Vulcanus."],
+ ["Vulkane haben meist eine besondere Form: Es sind Berge, bei denen die Spitze fehlt.","Volcanoes usually have a distinctive shape: they are mountains whose peak is missing."],
+ ["Stattdessen sieht man dort eine Vertiefung, die ungefähr rund ist.","Instead you see a hollow there, which is roughly round."]
+]},
+
+{lv:3,cat:"klexikon",title:"Das Gehirn",note:"Genitive case · um … zu · scientific register",
+ src:"Klexikon: Gehirn",url:"https://klexikon.zum.de/wiki/Gehirn",lic:"CC BY-SA 4.0",
+ tip:"<b>The genitive, which textbooks delay and real texts don't.</b> <code>aller Wirbeltiere</code>, <code>des Menschen</code>, <code>des Bewusstseins</code>, <code>der Nervenzellen</code> — four in seven sentences. It marks possession or belonging and mostly adds <em>-s</em> or <em>-es</em> to masculine and neuter nouns. Rare in speech, unavoidable in writing.",
+ s:[
+ ["Das Gehirn ist ein wichtiges Organ aller Wirbeltiere und damit auch des Menschen.","The brain is an important organ of all vertebrates and hence also of humans."],
+ ["Es sammelt alle Informationen, die der Körper von außen und aus seinem Inneren erhält.","It gathers all the information that the body receives from outside and from within itself."],
+ ["Es verarbeitet sie und sendet Befehle, um die einzelnen Organe zu steuern.","It processes them and sends commands in order to control the individual organs."],
+ ["Das Gehirn ist auch der „Sitz“ des Bewusstseins, des Denkens und des Gedächtnisses.","The brain is also the “seat” of consciousness, of thought and of memory."],
+ ["Nahezu alles, was wir denken, fühlen und machen, geht vom Gehirn aus.","Almost everything we think, feel and do proceeds from the brain."],
+ ["Das Gehirn eines Menschen wiegt ungefähr 1300 Gramm und ist gut geschützt im Schädel untergebracht.","A human brain weighs about 1300 grams and is housed, well protected, in the skull."],
+ ["Die Nervenzellen sind die eigentlichen „Arbeitstiere“ im Gehirn.","The nerve cells are the real “workhorses” in the brain."],
+ ["Darüber hinaus gibt es Glia-Zellen, die die Arbeit der Nervenzellen unterstützen.","Beyond that there are glial cells, which support the work of the nerve cells."]
+]},
+
+{lv:3,cat:"klexikon",title:"Die Schokolade",note:"Simple past in exposition · sich lassen · durch + agent",
+ src:"Klexikon: Schokolade",url:"https://klexikon.zum.de/wiki/Schokolade",lic:"CC BY-SA 4.0",
+ tip:"<b><code>durch</code> introduces the agent.</b> <code>die Entdeckung Amerikas <u>durch</u> Christoph Kolumbus</code> — the discovery of America <em>by</em> Columbus. English uses “by” for both the doer and the means; German splits them (<em>von</em> for the doer in a passive, <em>durch</em> for the means or cause). Getting this right is a quiet marker of good German.",
+ s:[
+ ["Schokolade ist eine Süßigkeit aus verarbeiteten Früchten der Kakaopflanze.","Chocolate is a sweet made from processed fruits of the cacao plant."],
+ ["Außerdem enthält Schokolade Zucker und meistens auch Milch.","Chocolate also contains sugar and usually milk as well."],
+ ["Der Name kommt aus der Sprache der Azteken.","The name comes from the language of the Aztecs."],
+ ["Sie kannten ein Getränk aus Wasser, Kakao, Vanille und Pfeffer, das sie „Xocólatl“ nannten.","They knew a drink of water, cacao, vanilla and pepper, which they called “Xocólatl”."],
+ ["Nach der Entdeckung Amerikas durch Christoph Kolumbus brachten spanische Seefahrer den Kakao aus Südamerika nach Europa.","After the discovery of America by Christopher Columbus, Spanish seafarers brought cacao from South America to Europe."],
+ ["Dort entdeckte man, dass sich die Kakaobohnen pressen und zu Pulver verarbeiten ließen.","There it was discovered that the cacao beans could be pressed and processed into powder."],
+ ["Aus diesem Pulver konnte man ein süßes Getränk machen, wenn man es in Wasser löste und Zucker und Honig dazugab.","From this powder you could make a sweet drink, if you dissolved it in water and added sugar and honey."]
+]},
+
+{lv:3,cat:"klexikon",title:"Die Wolke",note:"entweder … oder · comparative als-clause · meteorology",
+ src:"Klexikon: Wolke",url:"https://klexikon.zum.de/wiki/Wolke",lic:"CC BY-SA 4.0",
+ tip:"<b>Sentence 3 is the hard one, and it repays the effort.</b> <code>…wenn mehr Wasser in der Luft ist, als diese in Form von Wasserdampf aufnehmen kann</code> — a <em>wenn</em> clause containing a comparison, where <code>diese</code> refers back to <em>die Luft</em>. Real expository German nests structures like this constantly; graded readers almost never do.",
+ s:[
+ ["Eine Wolke ist eine Ansammlung von sehr feinen Wassertröpfchen.","A cloud is an accumulation of very fine water droplets."],
+ ["Sie bestehen aus Nebel oder Eis-Kristallen in der Atmosphäre.","They consist of mist or ice crystals in the atmosphere."],
+ ["Wolken bilden sich immer dann, wenn mehr Wasser in der Luft ist, als diese in Form von Wasserdampf aufnehmen kann.","Clouds form whenever there is more water in the air than the air can hold in the form of water vapour."],
+ ["Der gasförmige Wasserdampf kondensiert dann zu flüssigem Wasser.","The gaseous water vapour then condenses into liquid water."],
+ ["Das kann auf zwei Arten geschehen: Entweder kühlt die Luft beim Aufsteigen ab, oder es werden Luftmengen durchmischt, die unterschiedlich warm sind.","That can happen in two ways: either the air cools as it rises, or masses of air at different temperatures are mixed together."],
+ ["Aber Wolken sind auch bei zahlreichen Fragen in der Wissenschaft wichtig.","But clouds are also important for numerous questions in science."],
+ ["Daher gilt die Wolkenkunde auch als eigener Teilbereich innerhalb der Wetterkunde.","Hence the study of clouds counts as a subfield of meteorology in its own right."]
+]},
+
+/* ---------------- KLASSIKER (public domain) ---------------- */
+{lv:4,cat:"klassiker",title:"Der süße Brei",note:"Grimm, 1857 · archaic spelling · historic present · fairy-tale syntax",
+ src:"Brüder Grimm, Kinder- und Hausmärchen (1857), KHM 103 — public domain",
+ url:"https://de.wikisource.org/wiki/Der_s%C3%BC%C3%9Fe_Brei_(1857)",lic:"Public domain",
+ tip:"<b>Read the spelling, not the dictionary.</b> This is the 1857 original, so you'll meet <code>gieng</code> (= ging), <code>wußte</code> (= wusste), <code>Armuth</code> (= Armut), <code>Noth</code> (= Not). None of these are forms to imitate — but every German child knows this story, and half of German idiom leans on the Grimms. Notice too how the narration slips from past into <em>present</em> tense partway through to speed the disaster up.",
+ s:[
+ ["Es war einmal ein armes frommes Mädchen, das lebte mit seiner Mutter allein, und sie hatten nichts mehr zu essen.","There was once a poor, pious girl who lived alone with her mother, and they had nothing left to eat."],
+ ["Da gieng das Kind hinaus in den Wald, und begegnete ihm da eine alte Frau, die wußte seinen Jammer schon und schenkte ihm ein Töpfchen.","Then the child went out into the forest, and there an old woman met her who already knew her distress and gave her a little pot."],
+ ["Zu dem sollt es sagen „Töpfchen, koche,“ so kochte es guten süßen Hirsenbrei, und wenn es sagte „Töpfchen, steh,“ so hörte es wieder auf zu kochen.","To it she was to say “Little pot, cook”, and it would cook good sweet millet porridge; and when she said “Little pot, stop”, it would cease cooking again."],
+ ["Das Mädchen brachte den Topf seiner Mutter heim, und nun waren sie ihrer Armuth und ihres Hungers ledig und aßen süßen Brei so oft sie wollten.","The girl brought the pot home to her mother, and now they were rid of their poverty and their hunger, and ate sweet porridge as often as they liked."],
+ ["Auf eine Zeit war das Mädchen ausgegangen, da sprach die Mutter „Töpfchen, koche,“ da kocht es, und sie ißt sich satt.","One time the girl had gone out; then the mother said “Little pot, cook”, and it cooks, and she eats her fill."],
+ ["Nun will sie daß das Töpfchen wieder aufhören soll, aber sie weiß das Wort nicht.","Now she wants the little pot to stop again, but she does not know the word."],
+ ["Also kocht es fort, und der Brei steigt über den Rand hinaus und kocht immer zu, die Küche und das ganze Haus voll, und das zweite Haus und dann die Straße, als wollts die ganze Welt satt machen.","So it cooks on, and the porridge rises over the rim and keeps on cooking — filling the kitchen and the whole house, and the second house and then the street, as if it meant to feed the whole world."],
+ ["Endlich, wie nur noch ein einziges Haus übrig ist, da kommt das Kind heim, und spricht nur „Töpfchen, steh,“ da steht es und hört auf zu kochen.","At last, when only a single house is left, the child comes home and says merely “Little pot, stop”, and it stops and ceases cooking."],
+ ["Und wer wieder in die Stadt wollte, der mußte sich durchessen.","And whoever wanted to get back into town had to eat their way through."]
+]},
+
+{lv:4,cat:"klassiker",title:"Die Sternthaler",note:"Grimm, 1857 · neuter pronouns for das Mädchen · simple past",
+ src:"Brüder Grimm, Kinder- und Hausmärchen (1857), KHM 153 — public domain",
+ url:"https://de.wikisource.org/wiki/Die_Sternthaler_(1857)",lic:"Public domain",
+ tip:"<b>The girl is “it”.</b> <code>das Mädchen</code> is grammatically <em>neuter</em>, so every pronoun referring to her is <code>es</code> and <code>ihm</code> — “it gave <em>it</em> its cap”. German gender is grammatical, not biological, and this story is the clearest demonstration you will ever read. Modern German often switches to <em>sie</em> after the first mention; the 1857 text does not.",
+ s:[
+ ["Es war einmal ein kleines Mädchen, dem war Vater und Mutter gestorben, und es war so arm, daß es kein Kämmerchen mehr hatte darin zu wohnen und kein Bettchen mehr darin zu schlafen.","There was once a little girl whose father and mother had died, and she was so poor that she no longer had a little room to live in nor a little bed to sleep in."],
+ ["Und endlich gar nichts mehr als die Kleider auf dem Leib und ein Stückchen Brot in der Hand, das ihm ein mitleidiges Herz geschenkt hatte.","And finally nothing at all but the clothes on her body and a scrap of bread in her hand, which a compassionate heart had given her."],
+ ["Es war aber gut und fromm.","But she was good and pious."],
+ ["Und weil es so von aller Welt verlassen war, gieng es im Vertrauen auf den lieben Gott hinaus ins Feld.","And because she was thus forsaken by all the world, she went out into the field trusting in dear God."],
+ ["Da begegnete ihm ein armer Mann, der sprach „ach, gib mir etwas zu essen, ich bin so hungerig.“","Then a poor man met her, who said, “Oh, give me something to eat, I am so hungry.”"],
+ ["Es reichte ihm das ganze Stückchen Brot und sagte „Gott segne dirs“ und gieng weiter.","She handed him the whole scrap of bread and said, “God bless it to you”, and went on."],
+ ["Da kam ein Kind das jammerte und sprach „es friert mich so an meinem Kopfe, schenk mir etwas, womit ich ihn bedecken kann.“","Then came a child who was wailing and said, “My head is so cold; give me something to cover it with.”"],
+ ["Da that es seine Mütze ab und gab sie ihm.","Then she took off her cap and gave it to him."],
+ ["Und wie es so stand und gar nichts mehr hatte, fielen auf einmal die Sterne vom Himmel, und waren lauter harte blanke Thaler.","And as she stood there with nothing left at all, all at once the stars fell from the sky, and were nothing but hard, shining thalers."],
+ ["Da sammelte es sich die Thaler hinein und war reich für sein Lebtag.","Then she gathered the thalers up and was rich for the rest of her days."]
+]},
+
+/* ---------------- NACHRICHTEN (CC BY 2.5) ---------------- */
+{lv:3,cat:"nachrichten",title:"ICE kollidiert mit Oberleitung",note:"News register · impersonal es kam zu · pluperfect passive",
+ src:"Wikinews: ICE kollidiert mit Oberleitung",url:"https://de.wikinews.org/wiki/ICE_kollidiert_mit_Oberleitung",lic:"CC BY 2.5",
+ tip:"<b><code>Zu … kam es</code> is news German.</b> Literally “to delays it came” — an impersonal construction that lets the writer front the <em>consequence</em> before the cause. You will meet it in every German news bulletin you ever read. Learn to recognise <code>es kam zu</code> + dative and a whole register opens up.",
+ s:[
+ ["Bei Lüneburg ist ein ICE in der Oberleitung hängengeblieben.","Near Lüneburg an ICE train got caught in the overhead line."],
+ ["Die Auswirkungen waren bundesweit spürbar.","The effects were felt nationwide."],
+ ["460 Reisende mussten stundenlang auf einen Ersatzzug warten.","460 passengers had to wait for hours for a replacement train."],
+ ["Zu stundenlangen Verspätungen und zahlreichen Zugausfällen kam es durch einen Oberleitungsschaden unweit des Haltepunkts Bardowick.","Delays of several hours and numerous cancellations were caused by damage to the overhead line not far from Bardowick stop."],
+ ["Rund 460 Personen an Bord des aus Hamburg kommenden ICEs mussten mehrere Stunden lang warten, bis die Oberleitung abgeklemmt und ein Ersatzzug auf das Nebengleis gebracht worden war.","Around 460 people on board the ICE coming from Hamburg had to wait several hours until the overhead line had been disconnected and a replacement train brought onto the adjacent track."]
+]},
+
+{lv:3,cat:"nachrichten",title:"Deutsche Post wird zur DHL AG",note:"Business news · impersonal passive · fronted objects",
+ src:"Wikinews: Deutsche Post AG wird zur DHL AG",url:"https://de.wikinews.org/wiki/Deutsche_Post_AG_wird_zur_DHL_AG",lic:"CC BY 2.5",
+ tip:"<b>Germans front the object for emphasis.</b> <code>Den Namen Deutsche Post behält das Unternehmen nur für das Deutschlandgeschäft.</code> The object (<em>den Namen</em>) comes first, the verb stays second, and the subject (<em>das Unternehmen</em>) follows it. English can't do this without sounding strange; German does it constantly to control emphasis.",
+ s:[
+ ["Die Deutsche Post AG heißt künftig DHL.","Deutsche Post AG will in future be called DHL."],
+ ["Das sollen die Aktionäre auf der Gesellschafterversammlung des Unternehmens in Bonn beschließen.","The shareholders are to decide this at the company's general meeting in Bonn."],
+ ["Mit einer Ablehnung wird nicht gerechnet.","A rejection is not expected."],
+ ["Den Namen Deutsche Post behält das Unternehmen nur für das Deutschlandgeschäft.","The company is keeping the name Deutsche Post only for its German business."],
+ ["Adrian Dalsey, Larry Hillblom und Robert Lynn hatten 1969 in San Francisco ein Unternehmen gegründet.","Adrian Dalsey, Larry Hillblom and Robert Lynn had founded a company in San Francisco in 1969."]
+]},
+
+{lv:4,cat:"nachrichten",title:"Brenzkirche Stuttgart",note:"Extended participial attributes · architectural and historical register",
+ src:"Wikinews: Brenzkirche Stuttgart: Umbau hat begonnen",url:"https://de.wikinews.org/wiki/Brenzkirche_Stuttgart:_Umbau_hat_begonnen",lic:"CC BY 2.5",
+ tip:"<b>The extended attribute, in its natural habitat.</b> <code>das <u>vom Stuttgarter Architekten Alfred Daiber entworfene</u> Gotteshaus</code> — a whole relative clause crammed between article and noun. English must unpack it (“the church, designed by…”). Strategy: find the article, jump to the noun, then read the filling. Sentences 4 and 5 both do it.",
+ s:[
+ ["Die Brenzkirche in Stuttgart wird seit einigen Monaten umgebaut.","The Brenz Church in Stuttgart has been undergoing conversion work for some months."],
+ ["Es sollen dabei Elemente der ursprünglichen Form von 1933 wiederhergestellt und solche des Umbaus von Rudolf Lempp entfernt werden.","In the process, elements of the original 1933 form are to be restored and those of Rudolf Lempp's conversion removed."],
+ ["Im April 2026 ist das Satteldach abgetragen und ein Flachdach eingebaut.","In April 2026 the pitched roof was removed and a flat roof installed."],
+ ["Ursprünglich hatte das vom Stuttgarter Architekten Alfred Daiber entworfene Gotteshaus ein Flachdach gehabt.","Originally the church, designed by the Stuttgart architect Alfred Daiber, had had a flat roof."],
+ ["Das am Kochenhof liegende Bauwerk war stilistisch an die benachbarte Weissenhofsiedlung angepasst, erregte jedoch den Unmut der Stuttgarter Nazis.","The building, which stands on the Kochenhof, was stylistically matched to the neighbouring Weissenhof estate, but aroused the displeasure of the Stuttgart Nazis."],
+ ["Deswegen wurde 1938 festgelegt, dass die Kirche ein Satteldach zu bekommen habe.","For that reason it was decreed in 1938 that the church was to be given a pitched roof."]
 ]}
 ];
 
@@ -1016,6 +1171,10 @@ function openText(i){
      <p class="note">${CATS[t.cat].e} ${CATS[t.cat].de} · ${LV[t.lv].n} (${LV[t.lv].cefr}) · ${t.note}<br>Tap any line for the English</p>`
     + t.s.map(([de,en])=>`<div class="sent"><div class="de">${spk(de)}</div><div class="en">${en}</div></div>`).join("");
   document.getElementById("rtip").innerHTML = t.tip;
+  // licences require attribution to travel with the text
+  document.getElementById("rattr").innerHTML = t.src
+    ? `German text from <a href="${t.url}" target="_blank" rel="noopener">${t.src}</a> · ${t.lic} · English translation added for this project.`
+    : `Original text written for this project.`;
   document.querySelectorAll("#textbox .sent").forEach(s=>s.onclick=()=>s.classList.toggle("open"));
   document.getElementById("revealAll").textContent="Reveal all translations";
 
