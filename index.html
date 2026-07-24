@@ -1246,7 +1246,7 @@ function extractGerman(doc){
   const POS = ['Noun','Verb','Adjective','Adverb','Pronoun','Preposition','Postposition','Article',
                'Conjunction','Numeral','Determiner','Interjection','Particle','Proper noun',
                'Contraction','Prefix','Suffix'];
-  let ety='', defs=[], curPOS=null, curUsed=false, wantEty=false;
+  let ety='', defs=[], examples=[], curPOS=null, curUsed=false, wantEty=false;
   for(let k=gi+1;k<nodes.length;k++){
     const n=nodes[k]; if(n.tagName==='H2') break;
     const head=(n.textContent||'').replace(/\[edit\]/ig,'').trim();
@@ -1257,32 +1257,25 @@ function extractGerman(doc){
     } else if(n.tagName==='P'){
       if(wantEty && !ety && head){ ety=head; wantEty=false; }
     } else if(n.tagName==='OL' && curPOS && !curUsed){
-      const items=[...n.children].filter(li=>li.tagName==='LI').map(li=>{
+      const items=[];
+      for(const li of [...n.children].filter(x=>x.tagName==='LI')){
+        // Wiktionary ships its own usage examples inline — harvest them
+        // (CORS-clean, since they come from this same response).
+        li.querySelectorAll('.h-usage-example').forEach(ex=>{
+          if(examples.length>=3) return;
+          const de=(ex.querySelector('.e-example')?.textContent||'').replace(/\s+/g,' ').trim();
+          const en=(ex.querySelector('.e-translation')?.textContent||'').replace(/\s+/g,' ').trim();
+          if(de) examples.push({de,en});
+        });
         const c=li.cloneNode(true);
         c.querySelectorAll('dl,ul,ol,.citation-whole,.h-usage-example,.mention-gloss-paren,style').forEach(x=>x.remove());
-        return c.textContent.replace(/\s+/g,' ').trim();
-      }).filter(Boolean);
+        const txt=c.textContent.replace(/\s+/g,' ').trim();
+        if(txt) items.push(txt);
+      }
       if(items.length){ defs.push({pos:curPOS, items:items.slice(0,3)}); curUsed=true; }
     }
   }
-  return {ety, defs};
-}
-
-// Real bilingual example sentences from the open Tatoeba corpus.
-async function tatoeba(word){
-  try{
-    const r = await fetch(`https://tatoeba.org/en/api_v0/search?from=deu&to=eng&query=${encodeURIComponent(word)}&sort=relevance&trans_filter=limit&trans_to=eng`);
-    if(!r.ok) return [];
-    const j = await r.json();
-    const out=[];
-    for(const row of (j.results||[])){
-      let en='';
-      for(const grp of (row.translations||[])) for(const t of grp) if(t.lang==='eng'){ en=t.text; break; }
-      if(row.text) out.push({de:row.text, en});
-      if(out.length>=3) break;
-    }
-    return out;
-  }catch(e){ return []; }
+  return {ety, defs, examples};
 }
 
 // ---- popup UI ----
@@ -1335,7 +1328,8 @@ async function showWord(word, el){
   positionPop(el); p.classList.add('on');
 
   const token=word; wpActive._tok=token;
-  const [wik_, ex] = await Promise.all([wiktionary(word), tatoeba(word)]);
+  const wik_ = await wiktionary(word);
+  const ex = wik_?.examples || [];
   if(wpActive?._tok!==token) return; // a newer click superseded this one
   const body=p.querySelector('.wp-body');
   let html='';
