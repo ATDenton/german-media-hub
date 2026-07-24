@@ -1295,10 +1295,11 @@ function closePop(){
   if(wpActive){ wpActive.classList.remove('active'); wpActive=null; }
 }
 function positionPop(el){
+  // .wpop is opacity:0 (not display:none) so it's already laid out and
+  // measurable — no need to toggle .on, which previously hid the card
+  // the moment content finished loading.
   const r=el.getBoundingClientRect(), p=wpop;
-  p.style.visibility='hidden'; p.classList.add('on');
-  const pw=p.offsetWidth, ph=p.offsetHeight;
-  p.classList.remove('on'); p.style.visibility='';
+  const pw=p.offsetWidth||340, ph=p.offsetHeight;
   let left=Math.min(Math.max(12, r.left+r.width/2-pw/2), innerWidth-pw-12);
   let top = r.bottom+8;
   if(top+ph > innerHeight-12) top = Math.max(12, r.top-ph-8);
