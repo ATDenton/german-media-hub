@@ -155,6 +155,51 @@
   .tip b{color:var(--fg)}
   .tip code{font-family:var(--mono);font-size:12.5px;background:var(--card);padding:1px 5px;border-radius:4px}
 
+  /* ---------- word lookup ---------- */
+  .sent .de .w{cursor:pointer;border-radius:3px;padding:0 .5px;transition:background .1s,color .1s}
+  .sent .de .w:hover{background:color-mix(in srgb,var(--acc) 24%,transparent);color:var(--fg)}
+  .sent .de .w.active{background:var(--acc);color:#141414}
+  .wpop{
+    position:fixed;z-index:100;width:340px;max-width:calc(100vw - 24px);
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    box-shadow:0 12px 40px rgba(0,0,0,.45);font-size:13.5px;color:var(--fg);
+    opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .12s,transform .12s;
+    max-height:min(70vh,520px);display:flex;flex-direction:column;
+  }
+  .wpop.on{opacity:1;transform:none;pointer-events:auto}
+  .wpop .wp-head{
+    display:flex;align-items:baseline;gap:9px;padding:13px 15px 10px;border-bottom:1px solid var(--line);
+  }
+  .wpop .wp-word{font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .wpop .wp-lemma{font-size:12px;color:var(--fg3);font-family:var(--mono)}
+  .wpop .wp-x{margin-left:auto;background:none;border:none;color:var(--fg3);font-size:17px;cursor:pointer;line-height:1;padding:2px 4px}
+  .wpop .wp-x:hover{color:var(--fg)}
+  .wpop .wp-body{padding:11px 15px 13px;overflow-y:auto;overscroll-behavior:contain}
+  .wpop .wp-sec{margin:0 0 13px}
+  .wpop .wp-sec:last-child{margin-bottom:0}
+  .wpop .wp-lbl{font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--fg3);font-weight:640;margin:0 0 6px}
+  .wpop .wp-pos{font-family:var(--mono);font-size:11px;color:var(--acc);margin:0 0 3px}
+  .wpop ol.wp-defs{margin:0 0 8px;padding-left:18px}
+  .wpop ol.wp-defs li{margin-bottom:4px;color:var(--fg);line-height:1.45}
+  .wpop .wp-ety{color:var(--fg2);line-height:1.5;font-size:13px}
+  .wpop .wp-ex{margin:0 0 9px;padding-left:10px;border-left:2px solid var(--line)}
+  .wpop .wp-ex .x-de{color:var(--fg);line-height:1.45}
+  .wpop .wp-ex .x-en{color:var(--fg3);font-style:italic;font-size:12.5px;margin-top:1px}
+  .wpop .wp-ex b{color:var(--acc);font-weight:600;font-style:normal}
+  .wpop .wp-links{display:flex;gap:6px;flex-wrap:wrap;padding:10px 15px;border-top:1px solid var(--line)}
+  .wpop .wp-links a{
+    font-size:12px;color:var(--fg2);text-decoration:none;border:1px solid var(--line);
+    border-radius:99px;padding:4px 11px;white-space:nowrap;
+  }
+  .wpop .wp-links a:hover{color:var(--fg);border-color:var(--fg3)}
+  .wpop .wp-load{color:var(--fg3);display:flex;align-items:center;gap:8px;padding:4px 0}
+  .wpop .wp-spin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:wpspin .7s linear infinite}
+  .wpop .wp-none{color:var(--fg3);font-style:italic}
+  @keyframes wpspin{to{transform:rotate(360deg)}}
+  @media(max-width:520px){
+    .wpop{left:12px!important;right:12px!important;width:auto;bottom:12px!important;top:auto!important;max-height:64vh}
+  }
+
   /* ---------- plan ---------- */
   .plan{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:14px}
   .plan h3{margin:0 0 3px;font-size:17px;display:flex;align-items:center;gap:9px}
@@ -1163,19 +1208,171 @@ function renderList(){
 // dialogues are written "A: …" — pull the speaker tag out for styling
 const spk = de => de.replace(/^([A-ZÄÖÜ]):\s/, '<span class="speaker">$1</span>');
 
+/* ================= WORD LOOKUP ================= */
+// Split a German line into clickable word-spans, keeping the speaker tag,
+// punctuation, quotes and spacing untouched.
+function tokenize(de){
+  let lead='';
+  de = de.replace(/^([A-ZÄÖÜ]):\s/, (m,g)=>{ lead=`<span class="speaker">${g}</span>`; return ''; });
+  const body = esc(de).replace(/([A-Za-zÄÖÜäöüß]+(?:[-’'][A-Za-zÄÖÜäöüß]+)*)/g,
+    w=>`<span class="w">${w}</span>`);
+  return lead+body;
+}
+
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+const uniq = a => [...new Set(a)];
+
+// One Wiktionary call → parse the German section for part-of-speech,
+// definitions and etymology out of the rendered HTML.
+async function wiktionary(word){
+  for(const v of uniq([cap(word), word, word.toLowerCase()])){
+    try{
+      const r = await fetch(`https://en.wiktionary.org/w/api.php?action=parse&page=${encodeURIComponent(v)}&prop=text&format=json&formatversion=2&redirects=1&origin=*`);
+      if(!r.ok) continue;
+      const j = await r.json();
+      const html = j?.parse?.text; if(!html) continue;
+      const doc = new DOMParser().parseFromString(html,'text/html');
+      const res = extractGerman(doc);
+      if(res && (res.defs.length || res.ety)){ res.page = j.parse.title || v; return res; }
+    }catch(e){}
+  }
+  return null;
+}
+
+function extractGerman(doc){
+  const nodes = [...doc.querySelectorAll('h2,h3,h4,p,ol')];
+  const gi = nodes.findIndex(n=>n.tagName==='H2' && /^german$/i.test((n.id||n.textContent||'').trim()));
+  if(gi<0) return null;
+  const POS = ['Noun','Verb','Adjective','Adverb','Pronoun','Preposition','Postposition','Article',
+               'Conjunction','Numeral','Determiner','Interjection','Particle','Proper noun',
+               'Contraction','Prefix','Suffix'];
+  let ety='', defs=[], curPOS=null, curUsed=false, wantEty=false;
+  for(let k=gi+1;k<nodes.length;k++){
+    const n=nodes[k]; if(n.tagName==='H2') break;
+    const head=(n.textContent||'').replace(/\[edit\]/ig,'').trim();
+    if(n.tagName==='H3'||n.tagName==='H4'){
+      if(/^Etymology/i.test(head)){ wantEty=true; curPOS=null; }
+      else if(POS.some(p=>new RegExp('^'+p,'i').test(head))){ curPOS=head.replace(/\s*\d+$/,''); curUsed=false; wantEty=false; }
+      else { wantEty=false; }
+    } else if(n.tagName==='P'){
+      if(wantEty && !ety && head){ ety=head; wantEty=false; }
+    } else if(n.tagName==='OL' && curPOS && !curUsed){
+      const items=[...n.children].filter(li=>li.tagName==='LI').map(li=>{
+        const c=li.cloneNode(true);
+        c.querySelectorAll('dl,ul,ol,.citation-whole,.h-usage-example,.mention-gloss-paren,style').forEach(x=>x.remove());
+        return c.textContent.replace(/\s+/g,' ').trim();
+      }).filter(Boolean);
+      if(items.length){ defs.push({pos:curPOS, items:items.slice(0,3)}); curUsed=true; }
+    }
+  }
+  return {ety, defs};
+}
+
+// Real bilingual example sentences from the open Tatoeba corpus.
+async function tatoeba(word){
+  try{
+    const r = await fetch(`https://tatoeba.org/en/api_v0/search?from=deu&to=eng&query=${encodeURIComponent(word)}&sort=relevance&trans_filter=limit&trans_to=eng`);
+    if(!r.ok) return [];
+    const j = await r.json();
+    const out=[];
+    for(const row of (j.results||[])){
+      let en='';
+      for(const grp of (row.translations||[])) for(const t of grp) if(t.lang==='eng'){ en=t.text; break; }
+      if(row.text) out.push({de:row.text, en});
+      if(out.length>=3) break;
+    }
+    return out;
+  }catch(e){ return []; }
+}
+
+// ---- popup UI ----
+let wpop=null, wpActive=null;
+function ensurePop(){
+  if(wpop) return wpop;
+  wpop=document.createElement('div'); wpop.className='wpop';
+  document.body.appendChild(wpop);
+  document.addEventListener('click',e=>{ if(wpop.classList.contains('on') && !wpop.contains(e.target) && !e.target.classList.contains('w')) closePop(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closePop(); });
+  window.addEventListener('resize',closePop);
+  return wpop;
+}
+function closePop(){
+  if(!wpop) return;
+  wpop.classList.remove('on');
+  if(wpActive){ wpActive.classList.remove('active'); wpActive=null; }
+}
+function positionPop(el){
+  const r=el.getBoundingClientRect(), p=wpop;
+  p.style.visibility='hidden'; p.classList.add('on');
+  const pw=p.offsetWidth, ph=p.offsetHeight;
+  p.classList.remove('on'); p.style.visibility='';
+  let left=Math.min(Math.max(12, r.left+r.width/2-pw/2), innerWidth-pw-12);
+  let top = r.bottom+8;
+  if(top+ph > innerHeight-12) top = Math.max(12, r.top-ph-8);
+  p.style.left=left+'px'; p.style.top=top+'px';
+}
+const boldWord = (s,w)=>esc(s).replace(new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<b>$1</b>');
+
+async function showWord(word, el){
+  const p=ensurePop();
+  if(wpActive) wpActive.classList.remove('active');
+  wpActive=el; el.classList.add('active');
+  const dwds=`https://www.dwds.de/wb/${encodeURIComponent(word)}`,
+        rev=`https://context.reverso.net/translation/german-english/${encodeURIComponent(word)}`,
+        wik=`https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#German`;
+  p.innerHTML=`
+    <div class="wp-head">
+      <span class="wp-word">${esc(word)}</span>
+      <button class="wp-x" aria-label="Close">✕</button>
+    </div>
+    <div class="wp-body"><div class="wp-load"><span class="wp-spin"></span>Looking up…</div></div>
+    <div class="wp-links">
+      <a href="${dwds}" target="_blank" rel="noopener">DWDS ↗</a>
+      <a href="${rev}" target="_blank" rel="noopener">Reverso ↗</a>
+      <a href="${wik}" target="_blank" rel="noopener">Wiktionary ↗</a>
+    </div>`;
+  p.querySelector('.wp-x').onclick=closePop;
+  positionPop(el); p.classList.add('on');
+
+  const token=word; wpActive._tok=token;
+  const [wik_, ex] = await Promise.all([wiktionary(word), tatoeba(word)]);
+  if(wpActive?._tok!==token) return; // a newer click superseded this one
+  const body=p.querySelector('.wp-body');
+  let html='';
+  if(wik_){
+    if(wik_.page && wik_.page.toLowerCase()!==word.toLowerCase())
+      p.querySelector('.wp-word').insertAdjacentHTML('afterend',`<span class="wp-lemma">→ ${esc(wik_.page)}</span>`);
+    for(const d of wik_.defs){
+      html+=`<div class="wp-sec"><div class="wp-pos">${esc(d.pos)}</div><ol class="wp-defs">`
+          + d.items.map(x=>`<li>${esc(x)}</li>`).join('')+`</ol></div>`;
+    }
+    if(wik_.ety) html+=`<div class="wp-sec"><p class="wp-lbl">Etymology</p><div class="wp-ety">${esc(wik_.ety)}</div></div>`;
+  }
+  if(ex.length){
+    html+=`<div class="wp-sec"><p class="wp-lbl">In context</p>`
+        + ex.map(e=>`<div class="wp-ex"><div class="x-de">${boldWord(e.de,word)}</div>${e.en?`<div class="x-en">${esc(e.en)}</div>`:''}</div>`).join('')
+        + `</div>`;
+  }
+  if(!html) html=`<div class="wp-none">No dictionary entry found for “${esc(word)}”. Try the links below — they handle inflected forms and phrases better.</div>`;
+  body.innerHTML=html;
+  positionPop(el); // re-anchor now that height is known
+}
+
 function openText(i){
   const t=TEXTS[i];
   browseEl.hidden=true; readEl.hidden=false;
   document.getElementById("textbox").innerHTML =
     `<h2 class="title">${t.title}</h2>
      <p class="note">${CATS[t.cat].e} ${CATS[t.cat].de} · ${LV[t.lv].n} (${LV[t.lv].cefr}) · ${t.note}<br>Tap any line for the English</p>`
-    + t.s.map(([de,en])=>`<div class="sent"><div class="de">${spk(de)}</div><div class="en">${en}</div></div>`).join("");
+    + t.s.map(([de,en])=>`<div class="sent"><div class="de">${tokenize(de)}</div><div class="en">${en}</div></div>`).join("");
   document.getElementById("rtip").innerHTML = t.tip;
   // licences require attribution to travel with the text
   document.getElementById("rattr").innerHTML = t.src
     ? `German text from <a href="${t.url}" target="_blank" rel="noopener">${t.src}</a> · ${t.lic} · English translation added for this project.`
     : `Original text written for this project.`;
   document.querySelectorAll("#textbox .sent").forEach(s=>s.onclick=()=>s.classList.toggle("open"));
+  document.querySelectorAll("#textbox .w").forEach(w=>w.onclick=e=>{ e.stopPropagation(); showWord(w.textContent, w); });
+  closePop();
   document.getElementById("revealAll").textContent="Reveal all translations";
 
   const vis=visible(), pos=vis.indexOf(i);
