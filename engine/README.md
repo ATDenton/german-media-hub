@@ -120,9 +120,17 @@ you `weil`.
   obscure plant rather than the currency. The fix for any specific word is
   `data/overrides.json`, which takes priority over everything else; the
   numerals and pronouns in there were pinned exactly this way.
-- **Auto-generated YouTube captions have no punctuation**, so sentence
-  splitting degrades badly. Uploader-provided subtitles are preferred
-  automatically.
+- **Auto-generated captions are usable, with one caveat.** They are normally
+  punctuated and mine perfectly well — but YouTube delivers them as
+  *rolling windows*, where each cue redisplays the previous line, so the raw
+  file contains every line two or three times. The parser detects and
+  collapses that; without it the merged text is fluent-looking nonsense.
+  Since human-subtitled German is scarce on YouTube, this matters more than
+  it sounds.
+
+  What actually decides usability is punctuation, not provenance, so
+  `analyze` measures it and warns when under half the sentences end in
+  `.?!` — meaning the boundaries are guesses.
 - Alignment corrects a constant offset, not variable drift.
 
 ## Tests

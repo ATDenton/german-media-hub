@@ -9,5 +9,8 @@ else
   PYTHON="$(command -v python3)"
 fi
 
-cd "$HERE"
-exec "$PYTHON" -m german_ci "$@"
+# Deliberately does NOT cd into the engine directory: you run this from
+# wherever your subtitles are, and cd-ing would break every relative path you
+# type. PYTHONPATH makes the package importable from anywhere instead, and the
+# engine's own data paths are all absolute.
+exec env PYTHONPATH="$HERE${PYTHONPATH:+:$PYTHONPATH}" "$PYTHON" -m german_ci "$@"

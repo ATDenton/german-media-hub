@@ -103,7 +103,9 @@ def command_analyze(args) -> int:
     if args.youtube:
         print(f"Fetching {args.youtube} ...")
         try:
-            fetched = media.fetch_youtube(args.youtube, args.media_dir)
+            fetched = media.fetch_youtube(
+                args.youtube, args.media_dir, download_video=args.media
+            )
         except media.MediaError as error:
             raise SystemExit(str(error)) from error
         german_path = fetched["german"] or german_path
@@ -111,11 +113,11 @@ def command_analyze(args) -> int:
         video_path = video_path or fetched["video"]
         if not german_path:
             raise SystemExit("no subtitle track was available for that video")
+        for warning in fetched.get("warnings", []):
+            print(f"  ! {warning}")
+
         if fetched["auto_generated"]:
-            print(
-                "  ! only auto-generated captions were available. They carry no\n"
-                "    punctuation, so sentence splitting will be rough."
-            )
+            print("  note: using auto-generated captions")
         print(f"  subtitles: {os.path.basename(german_path)}")
         if video_path:
             print(f"  video:     {os.path.basename(video_path)}")
@@ -128,6 +130,18 @@ def command_analyze(args) -> int:
     sentences = subtitles.load(german_path)
     if not sentences:
         raise SystemExit(f"no sentences found in {german_path}")
+
+    # Judge the transcript on whether it can actually be split into sentences,
+    # not on where it came from. Machine transcripts are frequently punctuated
+    # and mine perfectly well; the ones that cannot be used are the bare word
+    # streams, whatever produced them.
+    quality = subtitles.punctuation_ratio(sentences)
+    if quality < 0.5:
+        print(
+            f"  ! only {quality:.0%} of sentences end in punctuation, so sentence\n"
+            "    boundaries here are guesses and cards may be fragments.\n"
+            "    Worth skimming the study set before exporting."
+        )
 
     lexicon = _lexicon()
     profile = _profile(args.profile, lexicon, args.level)

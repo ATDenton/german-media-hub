@@ -68,6 +68,21 @@ BACK = """
 """
 
 
+def pretty_source(name: str) -> str:
+    """Turn a subtitle filename into something readable in Anki's deck list.
+
+    Downloaded subtitles arrive as
+    `22_Juli_2026_Tagesschau_in_100_Sekunden.de-DE-9WqM8fC0bpI.srt`, and the
+    extension plus the language tag are noise you then have to look at every
+    day in the sidebar.
+    """
+    stem = re.sub(r"\.(srt|vtt|ass|ssa)$", "", name, flags=re.IGNORECASE)
+    # Trailing language tag: ".de", ".en-US", ".de-DE-9WqM8fC0bpI", ".de-orig"
+    stem = re.sub(r"\.[a-z]{2}(?:-[A-Za-z0-9]+)*$", "", stem)
+    stem = stem.replace("_", " ").replace(".", " ")
+    return re.sub(r"\s+", " ", stem).strip() or name
+
+
 def _stable_id(text: str) -> int:
     """A deterministic 31-bit id, so decks and models keep their identity."""
     digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -123,7 +138,9 @@ def build_rows(items, source: str) -> list[dict]:
                 "WordGloss": html.escape(entry.gloss if entry else ""),
                 "Audio": item.extras.get("audio_field", ""),
                 "Screenshot": item.extras.get("screenshot_field", ""),
-                "Source": html.escape(source),
+                # Displayed tidily, but the GUID below stays keyed to the raw
+                # filename so cleaning this up cannot orphan existing notes.
+                "Source": html.escape(pretty_source(source)),
                 "Timestamp": timestamp,
                 "Rank": str(entry.rank) if entry and entry.rank else "",
                 "_guid": note_guid(source, timestamp, item.text),
@@ -155,7 +172,7 @@ def export_apkg(items, source: str, out_path: str, deck_name: str | None = None,
             "Install it (pip install genanki) or use --format tsv."
         ) from error
 
-    deck_name = deck_name or f"German CI::{source}"
+    deck_name = deck_name or f"German CI::{pretty_source(source)}"
     model = genanki.Model(
         _stable_id(MODEL_NAME),
         MODEL_NAME,

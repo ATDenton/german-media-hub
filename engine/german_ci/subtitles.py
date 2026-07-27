@@ -164,7 +164,60 @@ def parse_cues(content: str) -> list[Cue]:
         index += 1
         cues.append(Cue(index=index, start=start, end=max(end, start), text=text))
 
-    return cues
+    return _strip_rolling_duplicates(cues)
+
+
+def _cue_lines(cue: Cue) -> list[str]:
+    return [_WS_RE.sub(" ", line).strip() for line in cue.text.split("\n") if line.strip()]
+
+
+def _looks_rolling(cues: list[Cue]) -> bool:
+    """Do these cues use YouTube's rolling-window caption layout?
+
+    Auto-generated captions scroll: each cue redisplays the previous line and
+    appends a new one, padded with near-zero-duration spacer cues. Detected by
+    how often a cue opens with the line the previous cue closed on.
+    """
+    if len(cues) < 6:
+        return False
+    repeats = 0
+    for previous, current in zip(cues, cues[1:]):
+        before, after = _cue_lines(previous), _cue_lines(current)
+        if before and after and after[0] == before[-1]:
+            repeats += 1
+    return repeats / (len(cues) - 1) > 0.3
+
+
+def _strip_rolling_duplicates(cues: list[Cue]) -> list[Cue]:
+    """Collapse rolling-window captions down to each line's first appearance.
+
+    Without this every line is parsed two or three times over, and merging
+    that stream into sentences produces fluent-looking nonsense rather than
+    anything you could put on a card.
+
+    Only applied when the file actually looks like scrolling captions, so
+    ordinary subtitles that legitimately repeat a line are left alone.
+    """
+    if not _looks_rolling(cues):
+        return cues
+
+    collapsed: list[Cue] = []
+    recent: list[str] = []
+    for cue in cues:
+        fresh = [line for line in _cue_lines(cue) if line not in recent]
+        if not fresh:
+            continue
+        # Keep a short window: a line repeated much later is a real repeat.
+        recent = (recent + fresh)[-4:]
+        collapsed.append(
+            Cue(
+                index=len(collapsed) + 1,
+                start=cue.start,
+                end=max(cue.end, cue.start),
+                text=" ".join(fresh),
+            )
+        )
+    return collapsed
 
 
 def _split_turns(cue: Cue) -> list[Segment]:
@@ -321,6 +374,21 @@ def dedupe(sentences: list[Sentence]) -> list[Sentence]:
         seen.add(key)
         unique.append(sentence)
     return unique
+
+
+def punctuation_ratio(sentences: list[Sentence]) -> float:
+    """Share of sentences that end on real terminal punctuation.
+
+    The useful measure of whether a subtitle file can be mined at all. A
+    well-punctuated transcript scores near 1.0 and splits cleanly; a bare
+    word-stream scores near 0 and every "sentence" is a splice artifact.
+    This is about the text, not its provenance -- plenty of machine
+    transcripts are properly punctuated, and some human ones are not.
+    """
+    if not sentences:
+        return 0.0
+    ended = sum(1 for s in sentences if s.text.rstrip()[-1:] in ".!?…")
+    return ended / len(sentences)
 
 
 def load(path: str, scene_gap: float = SCENE_GAP_SECONDS) -> list[Sentence]:

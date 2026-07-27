@@ -215,6 +215,16 @@
   "lemma": "können",
   "pos": "verb"
  },
+ "langem": {
+  "gloss": "long",
+  "lemma": "lang",
+  "pos": "adj"
+ },
+ "langen": {
+  "gloss": "long",
+  "lemma": "lang",
+  "pos": "adj"
+ },
  "lassen": {
   "gloss": "to let, to allow; to have (something) done",
   "lemma": "lassen",
