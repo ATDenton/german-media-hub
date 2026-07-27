@@ -116,21 +116,8 @@ def command_analyze(args) -> int:
         for warning in fetched.get("warnings", []):
             print(f"  ! {warning}")
 
-        # Auto-captions are not merely "rough": with no punctuation to split
-        # on, the merger invents sentence boundaries mid-clause and produces
-        # fragments that are not German. Cards built from those actively
-        # teach the wrong thing, so this needs an explicit opt-in rather than
-        # a warning that scrolls off the top of the terminal.
-        if fetched["auto_generated"] and not args.allow_auto_subs:
-            raise SystemExit(
-                "\n  Only auto-generated captions are available for this video.\n\n"
-                "  They carry no punctuation, so sentences get split mid-clause\n"
-                "  and the resulting cards teach broken German. Better options:\n\n"
-                "    - pick a video whose uploader wrote real subtitles:\n"
-                "        yt-dlp --skip-download --list-subs 'URL' \\\n"
-                "          | grep -A4 'Available subtitles'\n"
-                "    - or proceed anyway with --allow-auto-subs\n"
-            )
+        if fetched["auto_generated"]:
+            print("  note: using auto-generated captions")
         print(f"  subtitles: {os.path.basename(german_path)}")
         if video_path:
             print(f"  video:     {os.path.basename(video_path)}")
@@ -143,6 +130,18 @@ def command_analyze(args) -> int:
     sentences = subtitles.load(german_path)
     if not sentences:
         raise SystemExit(f"no sentences found in {german_path}")
+
+    # Judge the transcript on whether it can actually be split into sentences,
+    # not on where it came from. Machine transcripts are frequently punctuated
+    # and mine perfectly well; the ones that cannot be used are the bare word
+    # streams, whatever produced them.
+    quality = subtitles.punctuation_ratio(sentences)
+    if quality < 0.5:
+        print(
+            f"  ! only {quality:.0%} of sentences end in punctuation, so sentence\n"
+            "    boundaries here are guesses and cards may be fragments.\n"
+            "    Worth skimming the study set before exporting."
+        )
 
     lexicon = _lexicon()
     profile = _profile(args.profile, lexicon, args.level)
@@ -331,8 +330,6 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("--video", help="video file for audio/screenshot clips")
     analyze.add_argument("--no-media", dest="media", action="store_false",
                          help="skip clip extraction even with a video")
-    analyze.add_argument("--allow-auto-subs", action="store_true",
-                         help="proceed even if only auto-generated captions exist")
     analyze.add_argument("--media-dir", default=os.path.join(DATA, "media"))
     analyze.add_argument("--mode", choices=MODES, default="i+1")
     analyze.add_argument("--limit", type=int, default=50)

@@ -230,10 +230,11 @@ def fetch_youtube(url: str, out_dir: str, language: str = "de",
             if name.endswith(".srt")
         )
 
-    # German is what we came for; English is a bonus that buys translations.
-    # Fetch them separately so a missing or rate-limited English track cannot
-    # abort a run that would otherwise have succeeded.
-    german_langs = f"{language},{language}-*"
+    # --sub-langs takes REGEXES, not shell globs, and matches them in full.
+    # "de-*" therefore reads as "de followed by zero or more hyphens" and
+    # misses real tracks like "de-DE-9WqM8fC0bpI", making the engine reject
+    # videos that do have proper German subtitles. "de.*" is what was meant.
+    german_langs = f"{language},{language}.*"
     _run(base(german_langs) + ["--write-subs", url])
     auto_generated = False
     if not existing_subs():
@@ -241,7 +242,7 @@ def fetch_youtube(url: str, out_dir: str, language: str = "de",
         auto_generated = True
 
     english_error = None
-    if not _try_run(base("en,en-*") + ["--write-subs", url]):
+    if not _try_run(base("en,en.*") + ["--write-subs", url]):
         english_error = "no English subtitle track (cards will have no translation)"
 
     video_error = None

@@ -120,17 +120,17 @@ you `weil`.
   obscure plant rather than the currency. The fix for any specific word is
   `data/overrides.json`, which takes priority over everything else; the
   numerals and pronouns in there were pinned exactly this way.
-- **Auto-generated YouTube captions have no punctuation.** With nothing to
-  split on, sentences get cut mid-clause and the cards teach broken German —
-  so `analyze --youtube` refuses them by default rather than warning. Check a
-  video before committing to it:
+- **Auto-generated captions are usable, with one caveat.** They are normally
+  punctuated and mine perfectly well — but YouTube delivers them as
+  *rolling windows*, where each cue redisplays the previous line, so the raw
+  file contains every line two or three times. The parser detects and
+  collapses that; without it the merged text is fluent-looking nonsense.
+  Since human-subtitled German is scarce on YouTube, this matters more than
+  it sounds.
 
-  ```bash
-  yt-dlp --skip-download --list-subs 'URL' | grep -A4 "Available subtitles"
-  ```
-
-  Output means a human wrote the subtitles. No output means auto-captions
-  only; `--allow-auto-subs` proceeds anyway if you want to see for yourself.
+  What actually decides usability is punctuation, not provenance, so
+  `analyze` measures it and warns when under half the sentences end in
+  `.?!` — meaning the boundaries are guesses.
 - Alignment corrects a constant offset, not variable drift.
 
 ## Tests

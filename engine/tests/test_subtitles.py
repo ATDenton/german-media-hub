@@ -123,6 +123,61 @@ class TestSentenceMerging(unittest.TestCase):
         self.assertEqual(sentence.timestamp(), "01:02:05")
 
 
+class TestRollingCaptions(unittest.TestCase):
+    """YouTube auto-captions scroll: each cue redisplays the previous line."""
+
+    ROLLING = (
+        "1\n00:00:00,880 --> 00:00:03,310\nAlkohol ist die Substanz\n\n"
+        "2\n00:00:03,310 --> 00:00:03,320\nAlkohol ist die Substanz\n \n\n"
+        "3\n00:00:03,320 --> 00:00:05,630\nAlkohol ist die Substanz\n"
+        "der Welt. Jedes Jahr stirbt\n\n"
+        "4\n00:00:05,630 --> 00:00:05,640\nder Welt. Jedes Jahr stirbt\n \n\n"
+        "5\n00:00:05,640 --> 00:00:08,230\nder Welt. Jedes Jahr stirbt\n"
+        "jemand daran.\n\n"
+        "6\n00:00:08,230 --> 00:00:08,240\njemand daran.\n \n"
+    )
+
+    def test_detects_rolling_layout(self):
+        cues = subtitles.parse_cues(self.ROLLING)
+        text = " ".join(cue.text for cue in cues)
+        # Each line must survive exactly once, not two or three times.
+        self.assertEqual(text.count("Alkohol ist die Substanz"), 1)
+        self.assertEqual(text.count("der Welt."), 1)
+        self.assertEqual(text.count("jemand daran."), 1)
+
+    def test_rolling_captions_produce_clean_sentences(self):
+        sentences = subtitles.dedupe(
+            subtitles.merge_into_sentences(subtitles.parse_cues(self.ROLLING))
+        )
+        texts = [s.text for s in sentences]
+        self.assertIn("Alkohol ist die Substanz der Welt.", texts)
+        self.assertIn("Jedes Jahr stirbt jemand daran.", texts)
+
+    def test_ordinary_subtitles_are_left_alone(self):
+        # A legitimately repeated line must not be swallowed as a rolling dup.
+        body = "".join(
+            f"{i}\n00:00:{i:02d},000 --> 00:00:{i:02d},900\nZeile {i}.\n\n"
+            for i in range(1, 9)
+        )
+        self.assertEqual(len(subtitles.parse_cues(body)), 8)
+
+
+class TestPunctuationRatio(unittest.TestCase):
+    def test_punctuated_transcript_scores_high(self):
+        items = [
+            subtitles.Sentence(text="Es regnet.", start=0, end=1),
+            subtitles.Sentence(text="Wie geht's?", start=2, end=3),
+        ]
+        self.assertEqual(subtitles.punctuation_ratio(items), 1.0)
+
+    def test_bare_word_stream_scores_low(self):
+        items = [
+            subtitles.Sentence(text="es regnet und dann", start=0, end=1),
+            subtitles.Sentence(text="gehen wir nach hause", start=2, end=3),
+        ]
+        self.assertEqual(subtitles.punctuation_ratio(items), 0.0)
+
+
 class TestDedupe(unittest.TestCase):
     def test_removes_repeats_ignoring_case_and_punctuation(self):
         items = [
