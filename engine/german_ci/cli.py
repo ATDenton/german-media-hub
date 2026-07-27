@@ -103,7 +103,9 @@ def command_analyze(args) -> int:
     if args.youtube:
         print(f"Fetching {args.youtube} ...")
         try:
-            fetched = media.fetch_youtube(args.youtube, args.media_dir)
+            fetched = media.fetch_youtube(
+                args.youtube, args.media_dir, download_video=args.media
+            )
         except media.MediaError as error:
             raise SystemExit(str(error)) from error
         german_path = fetched["german"] or german_path
@@ -111,10 +113,23 @@ def command_analyze(args) -> int:
         video_path = video_path or fetched["video"]
         if not german_path:
             raise SystemExit("no subtitle track was available for that video")
-        if fetched["auto_generated"]:
-            print(
-                "  ! only auto-generated captions were available. They carry no\n"
-                "    punctuation, so sentence splitting will be rough."
+        for warning in fetched.get("warnings", []):
+            print(f"  ! {warning}")
+
+        # Auto-captions are not merely "rough": with no punctuation to split
+        # on, the merger invents sentence boundaries mid-clause and produces
+        # fragments that are not German. Cards built from those actively
+        # teach the wrong thing, so this needs an explicit opt-in rather than
+        # a warning that scrolls off the top of the terminal.
+        if fetched["auto_generated"] and not args.allow_auto_subs:
+            raise SystemExit(
+                "\n  Only auto-generated captions are available for this video.\n\n"
+                "  They carry no punctuation, so sentences get split mid-clause\n"
+                "  and the resulting cards teach broken German. Better options:\n\n"
+                "    - pick a video whose uploader wrote real subtitles:\n"
+                "        yt-dlp --skip-download --list-subs 'URL' \\\n"
+                "          | grep -A4 'Available subtitles'\n"
+                "    - or proceed anyway with --allow-auto-subs\n"
             )
         print(f"  subtitles: {os.path.basename(german_path)}")
         if video_path:
@@ -316,6 +331,8 @@ def build_parser() -> argparse.ArgumentParser:
     analyze.add_argument("--video", help="video file for audio/screenshot clips")
     analyze.add_argument("--no-media", dest="media", action="store_false",
                          help="skip clip extraction even with a video")
+    analyze.add_argument("--allow-auto-subs", action="store_true",
+                         help="proceed even if only auto-generated captions exist")
     analyze.add_argument("--media-dir", default=os.path.join(DATA, "media"))
     analyze.add_argument("--mode", choices=MODES, default="i+1")
     analyze.add_argument("--limit", type=int, default=50)

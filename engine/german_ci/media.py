@@ -47,6 +47,20 @@ def _run(command: list[str]) -> None:
         )
 
 
+def _try_run(command: list[str]) -> bool:
+    """Run a command that is allowed to fail, reporting success as a bool.
+
+    Used for the optional parts of a fetch -- an English track that does not
+    exist, or a video download that is rate-limited -- where the run should
+    carry on with whatever it did get.
+    """
+    try:
+        _run(command)
+        return True
+    except MediaError:
+        return False
+
+
 def _safe_name(guid: str, suffix: str) -> str:
     """Anki dumps all media into one flat folder, so names must not collide."""
     return f"germanci-{guid}{suffix}"
@@ -181,12 +195,18 @@ def find_video_beside(subtitle_path: str) -> str | None:
     return best
 
 
-def fetch_youtube(url: str, out_dir: str, language: str = "de") -> dict:
-    """Download a video plus its subtitle track.
+def fetch_youtube(url: str, out_dir: str, language: str = "de",
+                  download_video: bool = True) -> dict:
+    """Download a video's subtitle track, and optionally the video itself.
 
-    Uploader-provided subtitles are tried first and auto-generated ones only
-    as a fallback: auto captions carry no punctuation, and without sentence
-    punctuation the cue-to-sentence merge has nothing to work with.
+    Subtitles are fetched first and on their own. They are a few kilobytes
+    where the video is hundreds of megabytes, and if the only captions on
+    offer are auto-generated the caller may well not want the video at all --
+    so there is no sense paying for the download before we know what we have.
+
+    Uploader-provided subtitles are tried before auto-generated ones: auto
+    captions carry no punctuation, and without sentence punctuation the
+    cue-to-sentence merge has nothing to work with.
     """
     if not have_ytdlp():
         raise MediaError(
@@ -196,11 +216,12 @@ def fetch_youtube(url: str, out_dir: str, language: str = "de") -> dict:
     os.makedirs(out_dir, exist_ok=True)
     template = os.path.join(out_dir, "%(title).80s.%(ext)s")
 
-    base = [
-        "yt-dlp", "--no-playlist", "--restrict-filenames",
-        "--sub-langs", f"{language},{language}-*,en,en-*",
-        "--convert-subs", "srt", "-o", template,
-    ]
+    def base(langs: str) -> list[str]:
+        return [
+            "yt-dlp", "--no-playlist", "--restrict-filenames",
+            "--sub-langs", langs, "--convert-subs", "srt",
+            "-o", template, "--skip-download",
+        ]
 
     def existing_subs() -> list[str]:
         return sorted(
@@ -209,11 +230,28 @@ def fetch_youtube(url: str, out_dir: str, language: str = "de") -> dict:
             if name.endswith(".srt")
         )
 
-    _run(base + ["--write-subs", url])
+    # German is what we came for; English is a bonus that buys translations.
+    # Fetch them separately so a missing or rate-limited English track cannot
+    # abort a run that would otherwise have succeeded.
+    german_langs = f"{language},{language}-*"
+    _run(base(german_langs) + ["--write-subs", url])
     auto_generated = False
     if not existing_subs():
-        _run(base + ["--write-auto-subs", "--skip-download", url])
+        _run(base(german_langs) + ["--write-auto-subs", "--write-subs", url])
         auto_generated = True
+
+    english_error = None
+    if not _try_run(base("en,en-*") + ["--write-subs", url]):
+        english_error = "no English subtitle track (cards will have no translation)"
+
+    video_error = None
+    if download_video:
+        if not _try_run([
+            "yt-dlp", "--no-playlist", "--restrict-filenames",
+            "-f", "bv*[height<=720]+ba/b[height<=720]/b",
+            "-o", template, url,
+        ]):
+            video_error = "video download failed (cards will have no audio)"
 
     subtitles = existing_subs()
     videos = [
@@ -234,4 +272,5 @@ def fetch_youtube(url: str, out_dir: str, language: str = "de") -> dict:
         "english": pick("en"),
         "auto_generated": auto_generated,
         "subtitles": subtitles,
+        "warnings": [w for w in (english_error, video_error) if w],
     }
