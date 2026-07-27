@@ -1,0 +1,47 @@
+1
+00:00:01,000 --> 00:00:03,500
+[Musik]
+
+2
+00:00:04,000 --> 00:00:06,200
+<i>Ich habe gestern einen sehr</i>
+
+3
+00:00:06,300 --> 00:00:08,900
+<i>interessanten Film gesehen.</i>
+
+4
+00:00:09,200 --> 00:00:12,000
+{\an8}- Wie war er?
+- Er war ziemlich lang.
+
+5
+00:00:12,400 --> 00:00:15,800
+PETER: Am 3. Oktober fahren wir
+nach Berlin.
+
+6
+00:00:16,000 --> 00:00:19,500
+Wir treffen uns dort mit Dr. Schmidt
+und seiner Frau.
+
+7
+00:00:20,000 --> 00:00:23,000
+Das Wetter soll gut werden,
+z.B. sonnig und warm.
+
+8
+00:00:23,500 --> 00:00:26,000
+(seufzt) Hoffentlich regnet es nicht.
+
+9
+00:00:40,000 --> 00:00:43,000
+Der Zug f&auml;hrt um acht Uhr ab
+
+10
+00:00:43,200 --> 00:00:46,000
+und kommt am Abend an.
+
+11
+00:00:47,000 --> 00:00:49,000
+Hoffentlich regnet es nicht.

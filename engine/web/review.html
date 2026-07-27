@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>German CI — Study Set</title>
+<style>
+  :root{
+    --bg:#0e0f13; --bg2:#15171d; --card:#191c24; --card-h:#1f232d;
+    --line:#282d39; --fg:#e8eaf0; --fg2:#9aa2b4; --fg3:#6b7385;
+    --acc:#f5c518; --acc2:#e04b4b; --ok:#5bc98a;
+    --r:14px;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,sans-serif;
+    --serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+  }
+  html[data-theme="light"]{
+    --bg:#faf9f7; --bg2:#f2f0ec; --card:#fff; --card-h:#fff;
+    --line:#e2ded7; --fg:#1a1c22; --fg2:#5c6172; --fg3:#8a8f9e;
+    --acc:#b8860b; --acc2:#c0392b; --ok:#2e8b57;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+
+  header{border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--bg2),var(--bg));padding:26px 0 20px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+  .flag{display:inline-flex;height:13px;width:20px;border-radius:2px;overflow:hidden;vertical-align:-1px;box-shadow:0 0 0 1px rgba(255,255,255,.09)}
+  .flag i{flex:1}
+  .flag i:nth-child(1){background:#111}.flag i:nth-child(2){background:#d00}.flag i:nth-child(3){background:#fc0}
+  h1{font-size:25px;margin:0 0 4px;letter-spacing:-.02em;font-weight:680}
+  .sub{color:var(--fg2);margin:0;font-size:14px}
+  .themebtn{background:var(--card);border:1px solid var(--line);color:var(--fg2);border-radius:99px;padding:6px 13px;cursor:pointer;font-size:13px;font-family:inherit}
+  .themebtn:hover{color:var(--fg);border-color:var(--fg3)}
+
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px}
+  .stat b{display:block;font-size:19px;font-weight:640;letter-spacing:-.01em}
+  .stat span{color:var(--fg3);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em}
+
+  .bar{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  button,select{font:inherit;font-size:13.5px;font-family:inherit;background:var(--card);border:1px solid var(--line);color:var(--fg);border-radius:9px;padding:7px 13px;cursor:pointer}
+  button:hover{border-color:var(--fg3)}
+  button.primary{background:var(--acc);border-color:var(--acc);color:#15171d;font-weight:640}
+  button.primary:hover{filter:brightness(1.08)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .grow{flex:1}
+  .note{color:var(--fg3);font-size:12.5px}
+
+  .row{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;margin:11px 0;display:flex;gap:14px;align-items:flex-start}
+  .row.sel{border-color:var(--acc)}
+  .row input[type=checkbox]{margin-top:5px;width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex:none}
+  .body{flex:1;min-width:0}
+  .de{font-family:var(--serif);font-size:20px;line-height:1.5;margin-bottom:5px}
+  .en{color:var(--fg2);font-size:14.5px;margin-bottom:9px}
+
+  .w{cursor:pointer;border-radius:3px;padding:0 1px;border-bottom:1.5px solid transparent}
+  .w.unknown{border-bottom-color:var(--acc2);color:var(--fg)}
+  .w.target{background:rgba(245,197,24,.17);border-bottom-color:var(--acc);font-weight:640}
+  .w.known:hover{border-bottom-color:var(--fg3)}
+  .w.name{color:var(--fg3);cursor:default}
+
+  .meta{display:flex;gap:9px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--fg3)}
+  .chip{border:1px solid var(--line);border-radius:99px;padding:1.5px 9px;font-size:11.5px;color:var(--fg2)}
+  .chip.lvl{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 40%,var(--line))}
+  .diff{width:64px;height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+  .diff i{display:block;height:100%;background:linear-gradient(90deg,var(--ok),var(--acc),var(--acc2))}
+  .gl{margin-top:8px;font-size:13.5px;color:var(--fg2);border-left:2px solid var(--acc);padding-left:10px}
+  .gl b{color:var(--fg)}
+  audio{height:30px;margin-top:9px;max-width:100%}
+  .shot{margin-top:9px;max-width:230px;border-radius:8px;display:block}
+
+  .empty{text-align:center;color:var(--fg3);padding:60px 20px}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--acc);color:var(--fg);padding:11px 20px;border-radius:11px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50}
+  .toast.on{opacity:1}
+  footer{color:var(--fg3);font-size:12.5px;padding:30px 0 40px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1><span class="flag"><i></i><i></i><i></i></span> Study Set</h1>
+        <p class="sub" id="src">loading…</p>
+      </div>
+      <button class="themebtn" id="theme">◐ theme</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%">
+    <select id="filter">
+      <option value="all">All sentences</option>
+      <option value="i1" selected>i+1 only (one new word)</option>
+      <option value="new">Has new words</option>
+    </select>
+    <button id="all">Select all</button>
+    <button id="none">Clear</button>
+    <span class="grow"></span>
+    <span class="note" id="count"></span>
+    <select id="fmt">
+      <option value="apkg">.apkg</option>
+      <option value="tsv">.tsv</option>
+    </select>
+    <button class="primary" id="export" disabled>Export selected</button>
+  </div>
+</div>
+
+<div class="wrap"><div id="list"></div></div>
+<footer>Click any word to toggle known · red underline = new · highlighted = card target</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const WORD = /[A-Za-zÄÖÜäöüßÀ-ÿ]+(?:['’\-][A-Za-zÄÖÜäöüßÀ-ÿ]+)*/g;
+let STATE = null;
+const selected = new Set();
+
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+
+function toast(message){
+  const el = $('toast');
+  el.textContent = message;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* Rebuild the sentence with each word clickable, keeping the original
+   punctuation and spacing. The token order matches words[] because the page
+   uses the same pattern the Python tokenizer does. */
+function renderSentence(item){
+  const words = item.words || [];
+  let html = '', last = 0, index = 0, match;
+  WORD.lastIndex = 0;
+  while ((match = WORD.exec(item.text)) !== null){
+    html += esc(item.text.slice(last, match.index));
+    const word = words[index++];
+    if (!word){ html += esc(match[0]); last = WORD.lastIndex; continue; }
+    let cls = 'w ';
+    if (!word.scoreable) cls += 'name';
+    else if (word.lemma === item.target) cls += 'target';
+    else if ((item.unknown || []).includes(word.lemma)) cls += 'unknown';
+    else cls += 'known';
+    const tip = word.scoreable
+      ? `${word.lemma}${word.pos ? ' · ' + word.pos : ''}${word.rank ? ' · rank ' + word.rank : ''}${word.gloss ? '\n' + word.gloss : ''}`
+      : 'name or foreign word';
+    html += `<span class="${cls}" data-lemma="${esc(word.lemma)}" data-can="${word.scoreable?1:0}" title="${esc(tip)}">${esc(match[0])}</span>`;
+    last = WORD.lastIndex;
+  }
+  html += esc(item.text.slice(last));
+  return html;
+}
+
+function visible(){
+  const mode = $('filter').value;
+  return (STATE.items || []).filter(item => {
+    const n = (item.unknown || []).length;
+    if (mode === 'i1') return n === 1;
+    if (mode === 'new') return n > 0;
+    return true;
+  });
+}
+
+function render(){
+  $('src').textContent = `${STATE.source} · ${STATE.mode} · ${STATE.profile.known.toLocaleString()} known lemmas`;
+
+  const s = STATE.stats || {};
+  $('stats').innerHTML = [
+    ['comprehension', (s.comprehension ?? 0) + '%'],
+    ['sentences', (s.sentences ?? 0).toLocaleString()],
+    ['unknown lemmas', (s.unknown_lemmas ?? 0).toLocaleString()],
+    ['mean difficulty', (s.mean_difficulty ?? 0) + '/100'],
+    ['i+1 available', (s.i_plus_1_sentences ?? 0).toLocaleString()],
+  ].map(([label, value]) => `<div class="stat"><b>${value}</b><span>${label}</span></div>`).join('');
+
+  const items = visible();
+  $('list').innerHTML = items.length ? items.map(item => {
+    const target = (item.words || []).find(w => w.lemma === item.target);
+    return `<div class="row ${selected.has(item.guid)?'sel':''}" data-guid="${item.guid}">
+      <input type="checkbox" ${selected.has(item.guid)?'checked':''}>
+      <div class="body">
+        <div class="de">${renderSentence(item)}</div>
+        ${item.translation ? `<div class="en">${esc(item.translation)}</div>` : ''}
+        <div class="meta">
+          <span class="chip lvl">${item.cefr}</span>
+          <span class="diff"><i style="width:${Math.min(100, item.difficulty)}%"></i></span>
+          <span>${item.difficulty}/100</span>
+          <span class="chip">${(item.unknown||[]).length} new</span>
+          <span>${item.timestamp}</span>
+        </div>
+        ${target && target.gloss ? `<div class="gl"><b>${esc(target.surface)}</b> — ${esc(target.gloss)}${target.rank?` <span class="note">· rank ${target.rank}</span>`:''}</div>` : ''}
+        ${item.audio ? `<audio controls preload="none" src="${item.audio}"></audio>` : ''}
+        ${item.screenshot ? `<img class="shot" src="${item.screenshot}" alt="">` : ''}
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty">Nothing matches this filter.<br>Try “All sentences”.</div>`;
+
+  $('count').textContent = `${selected.size} selected of ${items.length} shown`;
+  $('export').disabled = selected.size === 0;
+}
+
+async function api(path, body){
+  const response = await fetch(path, {
+    method: body ? 'POST' : 'GET',
+    headers: {'Content-Type':'application/json'},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) throw new Error((await response.json()).error || response.statusText);
+  return response.json();
+}
+
+document.addEventListener('click', async event => {
+  const word = event.target.closest('.w');
+  if (word && word.dataset.can === '1'){
+    const known = !word.classList.contains('known');
+    try {
+      STATE = await api('/api/mark', {lemma: word.dataset.lemma, known});
+      render();
+      toast(`${word.dataset.lemma} → ${known ? 'known' : 'new'}`);
+    } catch (error){ toast('Error: ' + error.message); }
+    return;
+  }
+  const row = event.target.closest('.row');
+  if (row){
+    const guid = row.dataset.guid;
+    selected.has(guid) ? selected.delete(guid) : selected.add(guid);
+    render();
+  }
+});
+
+$('filter').onchange = render;
+$('all').onclick = () => { visible().forEach(i => selected.add(i.guid)); render(); };
+$('none').onclick = () => { selected.clear(); render(); };
+
+$('export').onclick = async () => {
+  const button = $('export');
+  button.disabled = true;
+  button.textContent = 'Exporting…';
+  try {
+    const result = await api('/api/export', {guids: [...selected], format: $('fmt').value});
+    STATE = result.state;
+    selected.clear();
+    render();
+    toast(`Exported ${result.notes} notes → ${result.path}`);
+  } catch (error){ toast('Export failed: ' + error.message); }
+  button.textContent = 'Export selected';
+  render();
+};
+
+$('theme').onclick = () => {
+  const root = document.documentElement;
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  try { localStorage.setItem('gci-theme', next); } catch (e) {}
+};
+try {
+  const saved = localStorage.getItem('gci-theme');
+  if (saved) document.documentElement.dataset.theme = saved;
+} catch (e) {}
+
+api('/api/state').then(state => { STATE = state; render(); })
+  .catch(error => { $('list').innerHTML = `<div class="empty">Could not load: ${error.message}</div>`; });
+</script>
+</body>
+</html>
