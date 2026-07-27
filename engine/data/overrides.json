@@ -1,0 +1,445 @@
+{
+ "acht": {
+  "gloss": "eight",
+  "lemma": "acht",
+  "pos": "num"
+ },
+ "bin": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "bist": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "darf": {
+  "gloss": "to be allowed to, may",
+  "lemma": "dürfen",
+  "pos": "verb"
+ },
+ "dich": {
+  "gloss": "you (object)",
+  "lemma": "du",
+  "pos": "pron"
+ },
+ "dir": {
+  "gloss": "(to) you",
+  "lemma": "du",
+  "pos": "pron"
+ },
+ "eins": {
+  "gloss": "one",
+  "lemma": "eins",
+  "pos": "num"
+ },
+ "elf": {
+  "gloss": "eleven",
+  "lemma": "elf",
+  "pos": "num"
+ },
+ "euch": {
+  "gloss": "you (plural, object)",
+  "lemma": "ihr",
+  "pos": "pron"
+ },
+ "festen": {
+  "gloss": "firm; fixed; solid; steady",
+  "lemma": "fest",
+  "pos": "adj"
+ },
+ "gab": {
+  "gloss": "to give",
+  "lemma": "geben",
+  "pos": "verb"
+ },
+ "gegangen": {
+  "gloss": "to go, to walk",
+  "lemma": "gehen",
+  "pos": ""
+ },
+ "gehabt": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": ""
+ },
+ "gehe": {
+  "gloss": "to go, to walk",
+  "lemma": "gehen",
+  "pos": "verb"
+ },
+ "gehen": {
+  "gloss": "to go, to walk",
+  "lemma": "gehen",
+  "pos": "verb"
+ },
+ "geht": {
+  "gloss": "to go, to walk",
+  "lemma": "gehen",
+  "pos": "verb"
+ },
+ "gemacht": {
+  "gloss": "to make, to produce, to create (an object, arrangement, situation, etc.)",
+  "lemma": "machen",
+  "pos": ""
+ },
+ "gewesen": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "note": "been",
+  "pos": ""
+ },
+ "gib": {
+  "gloss": "to give",
+  "lemma": "geben",
+  "pos": "verb"
+ },
+ "gibt": {
+  "gloss": "to give",
+  "lemma": "geben",
+  "pos": "verb"
+ },
+ "ging": {
+  "gloss": "to go, to walk",
+  "lemma": "gehen",
+  "pos": "verb"
+ },
+ "habe": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "haben": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hast": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hat": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hatte": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hatten": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hundert": {
+  "gloss": "hundred",
+  "lemma": "hundert",
+  "pos": "num"
+ },
+ "hätte": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "hätten": {
+  "gloss": "to have",
+  "lemma": "haben",
+  "pos": "verb"
+ },
+ "ihm": {
+  "gloss": "(to) him, (to) it",
+  "lemma": "er",
+  "pos": "pron"
+ },
+ "ihn": {
+  "gloss": "him",
+  "lemma": "er",
+  "pos": "pron"
+ },
+ "ihnen": {
+  "gloss": "(to) them",
+  "lemma": "sie",
+  "pos": "pron"
+ },
+ "ihrer": {
+  "gloss": "of her, of them",
+  "lemma": "sie",
+  "pos": "pron"
+ },
+ "ist": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "kam": {
+  "gloss": "to come; to arrive",
+  "lemma": "kommen",
+  "pos": "verb"
+ },
+ "kann": {
+  "gloss": "to be able to, can",
+  "lemma": "können",
+  "pos": "verb"
+ },
+ "komme": {
+  "gloss": "to come; to arrive",
+  "lemma": "kommen",
+  "pos": "verb"
+ },
+ "kommst": {
+  "gloss": "to come; to arrive",
+  "lemma": "kommen",
+  "pos": "verb"
+ },
+ "kommt": {
+  "gloss": "to come; to arrive",
+  "lemma": "kommen",
+  "pos": "verb"
+ },
+ "konnte": {
+  "gloss": "to be able to, can",
+  "lemma": "können",
+  "pos": "verb"
+ },
+ "können": {
+  "gloss": "to be able to, can",
+  "lemma": "können",
+  "pos": "verb"
+ },
+ "könnte": {
+  "gloss": "to be able to, can",
+  "lemma": "können",
+  "pos": "verb"
+ },
+ "lassen": {
+  "gloss": "to let, to allow; to have (something) done",
+  "lemma": "lassen",
+  "pos": "verb"
+ },
+ "ließ": {
+  "gloss": "to let, to allow; to have (something) done",
+  "lemma": "lassen",
+  "pos": "verb"
+ },
+ "ließen": {
+  "gloss": "to let, to allow; to have (something) done",
+  "lemma": "lassen",
+  "pos": "verb"
+ },
+ "mache": {
+  "gloss": "to make, to produce, to create (an object, arrangement, situation, etc.)",
+  "lemma": "machen",
+  "pos": "verb"
+ },
+ "machen": {
+  "gloss": "to make, to produce, to create (an object, arrangement, situation, etc.)",
+  "lemma": "machen",
+  "pos": "verb"
+ },
+ "machst": {
+  "gloss": "to make, to produce, to create (an object, arrangement, situation, etc.)",
+  "lemma": "machen",
+  "pos": "verb"
+ },
+ "macht": {
+  "gloss": "to make, to produce, to create (an object, arrangement, situation, etc.)",
+  "lemma": "machen",
+  "pos": "verb"
+ },
+ "mag": {
+  "gloss": "to like; (möchte) would like",
+  "lemma": "mögen",
+  "pos": "verb"
+ },
+ "mich": {
+  "gloss": "me",
+  "lemma": "ich",
+  "pos": "pron"
+ },
+ "mir": {
+  "gloss": "(to) me",
+  "lemma": "ich",
+  "pos": "pron"
+ },
+ "muss": {
+  "gloss": "to have to, must",
+  "lemma": "müssen",
+  "pos": "verb"
+ },
+ "musste": {
+  "gloss": "to have to, must",
+  "lemma": "müssen",
+  "pos": "verb"
+ },
+ "mussten": {
+  "gloss": "to have to, must",
+  "lemma": "müssen",
+  "pos": "verb"
+ },
+ "möchte": {
+  "gloss": "to like; (möchte) would like",
+  "lemma": "mögen",
+  "pos": "verb"
+ },
+ "müssen": {
+  "gloss": "to have to, must",
+  "lemma": "müssen",
+  "pos": "verb"
+ },
+ "sei": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "sein": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "determiner"
+ },
+ "seinem": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "determiner"
+ },
+ "seinen": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "determiner"
+ },
+ "seiner": {
+  "gloss": "of him, of it",
+  "lemma": "er",
+  "pos": "pron"
+ },
+ "sich": {
+  "gloss": "himself, herself, itself, themselves",
+  "lemma": "sich",
+  "pos": "pron"
+ },
+ "sind": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "soll": {
+  "gloss": "to be supposed to, should",
+  "lemma": "sollen",
+  "pos": "verb"
+ },
+ "sollen": {
+  "gloss": "to be supposed to, should",
+  "lemma": "sollen",
+  "pos": "verb"
+ },
+ "sollt": {
+  "gloss": "to be supposed to, should",
+  "lemma": "sollen",
+  "pos": "verb"
+ },
+ "sollten": {
+  "gloss": "to be supposed to, should",
+  "lemma": "sollen",
+  "pos": "verb"
+ },
+ "tausend": {
+  "gloss": "thousand",
+  "lemma": "tausend",
+  "pos": "num"
+ },
+ "tun": {
+  "gloss": "to do (to perform or execute an action)",
+  "lemma": "tun",
+  "pos": "verb"
+ },
+ "tut": {
+  "gloss": "to do (to perform or execute an action)",
+  "lemma": "tun",
+  "pos": "verb"
+ },
+ "uns": {
+  "gloss": "us, (to) us",
+  "lemma": "wir",
+  "pos": "pron"
+ },
+ "war": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "note": "was",
+  "pos": "verb"
+ },
+ "waren": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "note": "were",
+  "pos": "verb"
+ },
+ "werden": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": "verb"
+ },
+ "will": {
+  "gloss": "to want to",
+  "lemma": "wollen",
+  "pos": "verb"
+ },
+ "wird": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": "verb"
+ },
+ "wissen": {
+  "gloss": "to know; to be aware of (a fact)",
+  "lemma": "wissen",
+  "pos": "verb"
+ },
+ "wollen": {
+  "gloss": "to want to",
+  "lemma": "wollen",
+  "pos": "adjective"
+ },
+ "wollte": {
+  "gloss": "to want to",
+  "lemma": "wollen",
+  "pos": "verb"
+ },
+ "wollten": {
+  "gloss": "to want to",
+  "lemma": "wollen",
+  "pos": "verb"
+ },
+ "worden": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": ""
+ },
+ "wurde": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": "verb"
+ },
+ "wurden": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": "verb"
+ },
+ "wusste": {
+  "gloss": "to know; to be aware of (a fact)",
+  "lemma": "wissen",
+  "pos": "verb"
+ },
+ "wäre": {
+  "gloss": "to be",
+  "lemma": "sein",
+  "pos": "verb"
+ },
+ "würden": {
+  "gloss": "to become; (auxiliary) will, shall",
+  "lemma": "werden",
+  "pos": "verb"
+ }
+}

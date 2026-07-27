@@ -60,6 +60,28 @@ Jacob Grimm died in 1863 and Wilhelm Grimm in 1859, so these texts have been in 
 
 ---
 
+## Engine data sources
+
+The comprehensible-input engine in `engine/` relies on two openly-licensed datasets.
+
+| Dataset | Used for | Licence | Where it lives |
+|---|---|---|---|
+| [hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords) `de_50k` | word-frequency ranks and CEFR banding | MIT | vendored at `engine/data/de_50k.txt` (662 KB) |
+| [kaikki.org German extract](https://kaikki.org/dictionary/German/) of [Wiktionary](https://de.wiktionary.org/) | English glosses and inflected-form → lemma mapping | CC BY-SA 3.0 | downloaded at build time, **not** committed |
+
+The frequency list is derived from the OpenSubtitles corpus, which is why it suits
+subtitle mining: its register is the same as the material being studied.
+
+The Wiktionary extract is ~1 GB. `engine/scripts/build_lexicon.py` streams it,
+keeps only entries overlapping the frequency list, and writes a local
+`lexicon.sqlite`. That build artifact is gitignored, so no CC BY-SA content is
+redistributed through this repo — it is fetched from source on each machine.
+
+A small `engine/data/overrides.json` holds hand-written glosses for auxiliaries,
+modals, pronouns and numerals, extended from the reader's existing glossary.
+
+---
+
 ## What is deliberately *not* here
 
 No contemporary copyrighted material has been copied into this repo — no newspaper articles, no modern short stories, no textbook content, no broadcaster transcripts. Those sources are **linked** from the Library tab instead.

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Wrapper so the tool runs from anywhere without activating the venv.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -x "$HERE/.venv/bin/python" ]; then
+  PYTHON="$HERE/.venv/bin/python"
+else
+  PYTHON="$(command -v python3)"
+fi
+
+cd "$HERE"
+exec "$PYTHON" -m german_ci "$@"

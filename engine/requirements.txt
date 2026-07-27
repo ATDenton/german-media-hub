@@ -1,0 +1,6 @@
+# Required only for .apkg export; `--format tsv` works without it.
+genanki>=0.13.0
+
+# Optional, for the media enrichment path (`analyze --youtube`).
+# ffmpeg must also be on PATH; install it separately (brew install ffmpeg).
+# yt-dlp>=2024.1.1

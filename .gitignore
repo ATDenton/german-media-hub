@@ -1,1 +1,16 @@
 .DS_Store
+
+# --- engine ---
+__pycache__/
+*.pyc
+engine/.venv/
+
+# Built artifact: ~60 MB, rebuild with scripts/build_lexicon.py
+engine/data/lexicon.sqlite
+
+# Personal state and generated output
+engine/data/profile.json
+engine/data/study_set.json
+engine/data/media/
+engine/data/*.apkg
+engine/data/*.tsv
